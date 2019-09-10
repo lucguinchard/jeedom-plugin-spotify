@@ -4,10 +4,10 @@ Description
 Plugin permettant de connecter jeedom avec vos comptes spotify.
           
 Installation
-=============
+============
 
 Configuration
------------
+-------------
 
 Todo
 
@@ -30,7 +30,7 @@ Utilisation
 ===========
 
 Widgets
----------
+-------
 
 Todo
 
