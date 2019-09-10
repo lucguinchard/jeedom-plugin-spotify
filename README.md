@@ -1,3 +1,3 @@
 # jeedom-plugin-spotify
 
-todo
+Todo
