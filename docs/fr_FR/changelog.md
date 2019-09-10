@@ -1,13 +1,11 @@
-﻿# jeedom-plugin-spotify
+﻿# 22-05-2019
 
-## 22-05-2019
+- Version initiale publiée sur le market
 
-Version initiale publiée sur le market
+# 05-06-2019
 
-## 05-06-2019
-
-Ajout de la possibilite d'utiliser l acces jeedom http
+- Ajout de la possibilité d'utiliser l'acces jeedom http
   
-## 10-09-2019
+# 10-09-2019
 
-Correction d un bug lorsqu il y a plus de 10 playlists
+- Correction d'un bug lorsqu'il y a plus de 10 playlists
