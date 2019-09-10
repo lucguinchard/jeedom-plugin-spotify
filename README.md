@@ -1,3 +1,3 @@
 # jeedom-plugin-spotify
 
-Todo
+Todo this is beta
