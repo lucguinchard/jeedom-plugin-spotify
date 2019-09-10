@@ -37,7 +37,7 @@ Ajouter un nouvel equipement pour le plugin spotify
 
 Cliquer sur le bouton tokenize, sasir votre login/password et approuver
 
-![accept](https://barre35.github.io/jeedom-plugin-spotify/assets/images/acept.png) 
+![accept](https://barre35.github.io/jeedom-plugin-spotify/assets/images/accept.png) 
 
 Les champs sont automatiquement remplis et il ne vous reste qu'à sauvegarder
 
