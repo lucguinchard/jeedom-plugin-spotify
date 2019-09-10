@@ -1,7 +1,7 @@
 ﻿Description 
 ===
 
-Plugin jeedom pour spotify connect.
+Plugin jeedom pour connecter vos comptes spotify connect.
 
 Installation
 ===
@@ -17,3 +17,4 @@ Questions fréquentes
 ===
 
 Todo
+
