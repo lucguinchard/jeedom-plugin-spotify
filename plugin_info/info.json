@@ -9,6 +9,6 @@
   "hasDependency": true,
   "hasOwnDeamon": true,
   "maxDependancyInstallTime": 60,
-  "changelog" : "https://jeedom.github.io/plugin-spotify/#language#/changelog",
-  "documentation" : "https://jeedom.github.io/plugin-spotify/#language#/"
+  "changelog" : "https://barre35.github.io/jeedom-plugin-spotify/#language#/changelog",
+  "documentation" : "https://barre35.github.io/jeedom-plugin-spotify/#language#/index"
 }
