@@ -10,21 +10,19 @@ Créer son compte et vous connecter sur https://developer.spotify.com/dashboard/
  
 Créer un client-id/client-secret ("Create a client id")
 
-![client-id](https://barre35.github.io/jeedom-plugin-spotify/assets/images/client-id.png)
-
 ![step-1](https://barre35.github.io/jeedom-plugin-spotify/assets/images/step-1.png)
 
 ![step-2](https://barre35.github.io/jeedom-plugin-spotify/assets/images/step-2.png)
 
 ![step-3](https://barre35.github.io/jeedom-plugin-spotify/assets/images/step-3.png)
 
+![client-secret](https://barre35.github.io/jeedom-plugin-spotify/assets/images/client-secret.png)
+
 Editer les propriétés ("Edit settings") en ajoutant https://[adresse]:[port]/index.php?v=d&m=spotify&p=spotify ou http://[adresse]:[port]/index.php?v=d&m=spotify&p=spotify en fonction de votre installation jeedom, puis sauvegarder
 
 ![settings](https://barre35.github.io/jeedom-plugin-spotify/assets/images/settings.png)
 
-Depuis la page de configuration du plugin, installer les dépendances.
-
-Coller votre client-id et votre client-secret et selectionner le protocole à utiliser pour la communication du daemon avec le plugin spotify
+Depuis la page de configuration du plugin, installer les dépendances, puis coller votre client-id et votre client-secret et selectionner le protocole à utiliser pour la communication du daemon avec le plugin spotify
 
 ![plugin](https://barre35.github.io/jeedom-plugin-spotify/assets/images/plugin.png)
 
