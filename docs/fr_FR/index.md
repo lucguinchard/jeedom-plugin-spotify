@@ -1,40 +1,18 @@
-Description 
-===
+# Description 
 
-Plugin permettant de connecter jeedom avec vos comptes spotify.
-          
-Installation
-===
+# Installation
 
-Configuration
----
+## Configuration
 
-Todo
+## Dépendances
 
-Dépendances
----
+## Démon
 
-Todo
+## Log
 
-Démon
----
+# Utilisation
 
-Todo
+## Widgets
 
-Log
----
 
-Todo
-
-Utilisation
-===
-
-Widgets
----
-
-Todo
-
-Commandes
----
-
-Todo
+## Commandes
