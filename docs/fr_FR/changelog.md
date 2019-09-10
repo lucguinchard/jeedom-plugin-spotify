@@ -1,8 +1,8 @@
-# jeedom-plugin-spotify
+﻿# jeedom-plugin-spotify
 
 ## 22-05-2019
 
-Version initiale publi�e sur le market
+Version initiale publiée sur le market
 
 ## 05-06-2019
 

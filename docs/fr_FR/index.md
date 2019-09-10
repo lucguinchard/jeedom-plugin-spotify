@@ -1,4 +1,4 @@
-﻿Description 
+Description 
 ===
 
 Plugin jeedom pour connecter vos comptes spotify connect.
