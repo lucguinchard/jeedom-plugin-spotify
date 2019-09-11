@@ -113,7 +113,7 @@ Chaque équipement dispose des commandes réparties dans les catégories suivant
 Pour aller plus loin
 ===
 
-Le plugin est gratuit et si vous l'utilisez et souhaitez m'aider à aller plus loin, vous pouvez faire un don via paypal à l'adresse : [url]https://paypal.me/sbarre35[/url] 
+Le plugin est gratuit et si vous l'utilisez et souhaitez m'aider à aller plus loin, vous pouvez faire un don via paypal à l'adresse : [https://paypal.me/sbarre35](https://paypal.me/sbarre35)
 
-Penser à noter le plugin sur le market et faites part de vos remarques, demandes d'évolutions et bugs sur le forum https://www.jeedom.com/forum/viewtopic.php?f=142&t=45483
+Penser à noter le plugin sur le market et faites part de vos remarques, demandes d'évolutions et bugs sur le forum [https://www.jeedom.com/forum/viewtopic.php?f=142&t=45483](https://www.jeedom.com/forum/viewtopic.php?f=142&t=45483)
 
