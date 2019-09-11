@@ -16,6 +16,8 @@ Créer un client-id/client-secret ("Create a client id")
 
 ![step-3](https://barre35.github.io/jeedom-plugin-spotify/assets/images/step-3.png)
 
+Récuoérer votre client-id et client-secret
+
 ![client-secret](https://barre35.github.io/jeedom-plugin-spotify/assets/images/client-secret.png)
 
 Editer les propriétés ("Edit settings") en ajoutant https://[adresse]:[port]/index.php?v=d&m=spotify&p=spotify ou http://[adresse]:[port]/index.php?v=d&m=spotify&p=spotify en fonction de votre installation jeedom, puis sauvegarder
@@ -52,4 +54,66 @@ Pour chaque equipement activé vous aurez un widget sur votre dashboard
  
 ![Widget](https://barre35.github.io/jeedom-plugin-spotify/assets/images/widget.png)
 
+Chaque équipement dispose des commandes réparties dans les catégories suivantes:
+
+- Item : "morceau en cours"
+
+	- Item Id **(info)** : clé interne spotifiy du morceau en cours
+
+	- Item Title **(info)** : titre du morceau en cours
+
+	- Item Artist **(info)** : nom de l'artiste du morceau en cours
+
+	- Item Album **(info)** : album du morceau en cours
+
+	- Item Image **(info)** : url de l'image principale du morceau en cours
+
+	- Playing **(info)** : *true* si la lecture est en cours, *false* sinon
+
+	- Play **(action)** : lecture (attention, ne fonctionne que lorsqu'un device est actif)
+
+	- Pause **(action)** : supend la lecture, lorsque la lecture est en cours
+	
+	- Previous **(action)** : retourne au morceau précédent
+
+	- Next **(action)** : passe au morceau suivant
+
+	- Shuffling **(info)** : *true* si la lecture aléatoire est activés, *false* sinon
+
+	- Shuffle **(action)** : active la lecture aléatoire
+
+	- Unshuffle **(action)** : désactive la lecture aléatoire
+
+- Device : "player actif"
+
+	- Device Is Active **(info)** : *true* si un player est actif, *false* sinon
+
+	- Device Id **(info)** : clé interne spotifiy du player 
+
+	- Device Name **(info)** : nom du player
+
+	- Device Id Set **(action)** : selectionne un device à partir de la clé interne spotify passée dans le paramètre 'select' (utilisé en liste déroulante dans le widget)	 
+
+	- Device Name Set **(action)** : selectionne un device à partir du libéllé passé en paramètre dans le paramètre 'title' ou 'message'
+
+	- Device Volume	**(info)** : volume du player (de 0 à 100)
+
+	- Device Volume Set **(action)** : positionne le volume passé en paramètre dans le paramètre 'title' ou 'message' (valeur de 0 à 100)
+
+- Playlist : "playlist en cours"
+
+	- Playlist Id **(info)** : clé interne spotify de la playlist en cours
+	
+	- Playlist Name	**(info)** : libellé de la playlist en cours
+
+	- Playlist Id Set **(action)** : selectionne une playlist à partir de la clé interne spotify passée dans le paramètre 'select' (utilisé en liste déroulante dans le widget)	 
+	 
+	- Playlist Name Set	**(action)** : selectionne une playlist à partir du libéllé passé en paramètre dans le paramètre 'title' ou 'message'
+
+Pour aller plus loin
+===
+
+Le plugin est gratuit et si vous l'utilisez et souhaitez m'aider à aller plus loin, vous pouvez faire un don via paypal à l'adresse : [url]https://paypal.me/sbarre35[/url] 
+
+Penser à noter le plugin sur le market et faites part de vos remarques, demandes d'évolutions et bugs sur le forum https://www.jeedom.com/forum/viewtopic.php?f=142&t=45483
 
