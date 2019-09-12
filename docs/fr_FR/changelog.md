@@ -1,4 +1,8 @@
-﻿# 11-09-2019 
+﻿# 12-09-2019
+
+- Mise en conformité par rapport aux règles de codage jeedom
+
+# 11-09-2019 
 
 - Mise à jour de la documentation
 
