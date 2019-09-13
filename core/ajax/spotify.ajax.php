@@ -86,7 +86,11 @@ try {
       log::add('spotify', 'debug', '### ID '.$id.' ###'); 
       $cmd = spotify::byId($id); 
       
-      $state = init('state');
+      if( init('state') != '') {
+      	$state = init('state');
+      } else {
+        $state = 'false';
+      }      
       log::add('spotify', 'debug', '### STATE '.$state.' ###'); 
       $cmd->checkAndUpdateCmd('shuffling', $state);
           

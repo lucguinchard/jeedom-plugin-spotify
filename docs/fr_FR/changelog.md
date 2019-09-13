@@ -1,4 +1,8 @@
-﻿# 12-09-2019
+﻿# 15-09-2019
+
+- Initialisation du shuffling à false sur le widget
+
+# 12-09-2019
 
 - Mise en conformité par rapport aux règles de codage jeedom
 
