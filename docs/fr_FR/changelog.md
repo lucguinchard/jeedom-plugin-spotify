@@ -1,6 +1,7 @@
 ﻿# 15-09-2019
 
 - Initialisation du shuffling à false sur le widget
+- Correction d'un défaut d'affichage sur la liste des équipements
 
 # 12-09-2019
 

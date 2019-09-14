@@ -136,11 +136,10 @@ if( $code != '' ) {
 			
             <?php foreach ($eqLogics as $eqLogic) : ?>
             
-            	<div class="eqLogicDisplayCard cursor" data-eqLogic_id="<?php echo $eqLogic->getId(); ?>" style="text-align: center; background-color : #ffffff; height : 140px;margin-bottom : 10px;padding : 5px;border-radius: 2px;width : 160px;margin-left : 10px;position: absolute; left: 0px; top: 0px;">
-              		<i class="fa fa-spotify" style="font-size : 6em;color:#767676;"></i>
-              		<br>
-              		<span style="font-size : 1.1em;position:relative; top : 23px;word-break: break-all;white-space: pre-wrap;word-wrap: break-word;color:#767676"><?php echo $eqLogic->getHumanName(true, true); ?></span>
-            	</div>
+            	<div class="eqLogicDisplayCard cursor" data-eqlogic_id="<?php echo $eqLogic->getId(); ?>" style="position: absolute; left: 0px; top: 0px;">
+    				<img src="plugins/spotify/plugin_info/spotify_icon.png"><br>    
+    				<strong><?php echo $eqLogic->getHumanName(true, true); ?></strong></span>
+  				</div>
               
           	<?php endforeach; ?>
 
