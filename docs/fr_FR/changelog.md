@@ -1,4 +1,10 @@
-﻿# 15-09-2019
+﻿# 17-09-2019
+
+- Prise en compte du nouveau mécanisme de widget de la V4
+- Extension à toutes les playlists (pas uniquement les privées)
+- Adptation du thème de l'IHM de configuration à la V4
+ 
+# 15-09-2019
 
 - Initialisation du shuffling à false sur le widget
 - Correction d'un défaut d'affichage sur la liste des équipements

@@ -17,6 +17,14 @@ class spotify extends eqLogic {
   	/*************** Attributs ***************/
 
   	public static $_widgetPossibility = array('custom' => true);
+    
+    public static function templateWidget(){
+		$return = array('info' => array('string' => array()));
+		$return['info']['string']['Image'] = array(
+			'template' => 'tmplSpotifyImage'
+		);
+		return $return;
+	}
   
   	/************* Static methods ************/
 
@@ -487,7 +495,8 @@ class spotify extends eqLogic {
           		$_user_id = $api->me()->id; 
           		log::add('spotify', 'debug', '--- USER ID ' . $_user_id . ' ---');  
           
-          		$_uri = 'spotify:user:' . $_user_id . ':playlist:' . $playlist;
+          		// $_uri = 'spotify:user:' . $_user_id . ':playlist:' . $playlist;
+              	$_uri = $playlist;
           		log::add('spotify', 'debug', '--- URI ' . $_uri . ' ---');  
           
           		$option = Array();
@@ -832,7 +841,7 @@ class spotify extends eqLogic {
 		$item_image->setSubType('string');
 		$item_image->setEqLogic_id($this->getId());
       	$item_image->setOrder($order++);
-      	$item_image->setTemplate('dashboard','item_image');
+      	$item_image->setTemplate('dashboard','spotify::Image');
       	$item_image->setDisplay('forceReturnLineBefore',1);
 		$item_image->save();
       

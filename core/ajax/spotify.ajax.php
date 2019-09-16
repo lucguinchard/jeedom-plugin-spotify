@@ -263,11 +263,13 @@ try {
       $context_uri = init('context_uri');
       log::add('spotify', 'info', '### CONTEXT URI '.$context_uri.' ###'); 
       
-      if( $context_type === 'playlist' ) {
+      // if( $context_type !== 'playlist' ) {
         
-        $_uri = strstr( $context_uri, 'playlist:');
-        $_playlist = explode(":", $_uri,10);
-        $_playlist_id = $_playlist[1];
+        // $_uri = strstr( $context_uri, 'playlist:');
+        // $_playlist = explode(":", $_uri,10);
+        // $_playlist_id = $_playlist[1];
+        
+        $_playlist_id = $context_uri;
         
         log::add('spotify', 'info', '### PLAYLIST ID '.$_playlist_id.' ###');     
         $cmd->checkAndUpdateCmd('playlist_id', $_playlist_id);   
@@ -293,12 +295,12 @@ try {
         log::add('spotify', 'info', '### PLAYLIST NAME '.$content.' ###');    
         $cmd->checkAndUpdateCmd('playlist_name', $content);  
         
-      }
-      else 
-      {
-         $cmd->checkAndUpdateCmd('playlist_id', '');        
-         $cmd->checkAndUpdateCmd('playlist_name', 'N/A');    
-      }
+      // }
+      // else 
+      // {
+         //$cmd->checkAndUpdateCmd('playlist_id', '');        
+         // $cmd->checkAndUpdateCmd('playlist_name', 'N/A');    
+      // }
       
       if( $context_type === 'artist' ) {
         $_uri = strstr( $context_uri, 'artist:');

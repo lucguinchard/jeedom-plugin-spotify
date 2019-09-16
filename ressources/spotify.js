@@ -269,10 +269,16 @@ function spotifyCheck( _apikey, _index, _clientid, _clientsecret, _command, _ref
       
       for ( var i = 0; i < data.body['items'].length; i++) {
 
-        console.log('=== PLAYLIST ' + i + ' === ' + data.body['items'][i]['id'] + ' === ' + data.body['items'][i]['name'] + ' === ');
+        _uri = data.body['items'][i]['owner']['uri'] + ':' + data.body['items'][i]['type'] + ':' + data.body['items'][i]['id'];
+        
+        // console.log('=== PLAYLIST ' + i + ' === ' + data.body['items'][i]['id'] + ' === ' + data.body['items'][i]['name'] + ' === ');
+        console.log('=== PLAYLIST ' + i + ' === ' + _uri + ' === ' + data.body['items'][i]['name'] + ' === ');
                     
-        _playlist_id = _playlist_id + separator + data.body['items'][i]['id'];
+        //_playlist_id = _playlist_id + separator + data.body['items'][i]['id'];
+        _playlist_id = _playlist_id + separator + _uri;
         _playlist_name = _playlist_name + separator + data.body['items'][i]['name'];
+        
+        /// console.log(data.body['items'][i]);
   
         separator = '|';
 

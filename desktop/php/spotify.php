@@ -2,7 +2,6 @@
 
 include_file('core', 'authentification', 'php');
 
-
 if (!isConnect('admin')) {
   throw new Exception('{{401 - Refused access}}');
 }
@@ -42,56 +41,57 @@ if( $code != '' ) {
 	<!-- Container bootstrap du menu latéral -->
   	<!-- =================================== -->
   
-	<div class="col-lg-2 col-md-3 col-sm-4">
+	<!-- <div class="col-lg-2 col-md-3 col-sm-4"> -->
   
   		<!-- ========================= -->
 		<!-- Container du menu latéral -->
   		<!-- ========================= -->
   
-		<div class="bs-sidebar">
+		<!-- <div class="bs-sidebar"> -->
   
   			<!-- ============ -->
   			<!-- Menu latéral -->
   			<!-- ============ -->
   
-			<ul id="ul_eqLogic" class="nav nav-list bs-sidenav">
+			<!-- <ul id="ul_eqLogic" class="nav nav-list bs-sidenav"> -->
   
   				<!-- ============== -->
   				<!-- Bouton d ajout -->
   				<!-- ============== -->
   
-          		<a class="btn btn-default eqLogicAction" data-action="add" style="margin-bottom: 5px;width: 100%">
+          		<!-- <a class="btn btn-default eqLogicAction" data-action="add" style="margin-bottom: 5px;width: 100%">
             		<i class="fa fa-plus-circle"></i> {{Ajouter un object}}
-          		</a>
+          		</a> -->
                 
                 <!-- ================= -->
           		<!-- Filtre des objets -->
                 <!-- ================= -->
                   
-          		<li class="filter" style="margin-bottom: 5px; width: 100%"><input class="filter form-control input-sm" placeholder="{{Rechercher}}"/></li>
+          		<!-- <li class="filter" style="margin-bottom: 5px; width: 100%"><input class="filter form-control input-sm" placeholder="{{Rechercher}}"/></li> -->
           
 				<!-- ================ -->
                 <!-- Liste des objets -->
                 <!-- ================ -->
 
-                <?php foreach ($eqLogics as $eqLogic) : ?>
+                <!-- <?php foreach ($eqLogics as $eqLogic) : ?>
                 	<li class="cursor li_eqLogic" data-eqLogic_id="<?php echo $eqLogic->getId(); ?>">
                 		<a><?php echo $eqLogic->getHumanName(true); ?></a>
                     </li>
-				<?php endforeach; ?>
+				<?php endforeach; ?> -->
 
-         	</ul>
+         	<!-- </ul> -->
       
-  		</div>
+  		<!-- </div> -->
   
-	</div>
+	<!-- </div> --
 
  	<!-- ============================================ -->
 	<!-- Container des listes de commandes / éléments -->
   	<!-- ============================================ -->
   
-	<div class="col-lg-10 col-md-9 col-sm-8 eqLogicThumbnailDisplay">
-
+	<!-- <div class="col-lg-10 col-md-9 col-sm-8 eqLogicThumbnailDisplay"> -->
+	<div class="col-lg-12 col-md-12 col-sm-12 eqLogicThumbnailDisplay">
+                  
   		<!-- ===================== -->
         <!—- Container d’une liste -->
   		<!-- ===================== -->
@@ -126,8 +126,10 @@ if( $code != '' ) {
         <!—- Container d’une liste -->
   		<!-- ===================== -->
   
-      	<legend><i class="fa fa-cog"></i> {{Mes objets}}</legend>
+      	<legend><i class="fab fa-spotify"></i> {{Mes équipements}}</legend>
   
+        <input class="form-control" placeholder="Rechercher" id="in_searchEqlogic">
+                  
         <div class="eqLogicThumbnailContainer" style="position: relative; height: 180px">
 
             <!-- ====================== -->
@@ -137,8 +139,8 @@ if( $code != '' ) {
             <?php foreach ($eqLogics as $eqLogic) : ?>
             
             	<div class="eqLogicDisplayCard cursor" data-eqlogic_id="<?php echo $eqLogic->getId(); ?>" style="position: absolute; left: 0px; top: 0px;">
-    				<img src="plugins/spotify/plugin_info/spotify_icon.png"><br>    
-    				<strong><?php echo $eqLogic->getHumanName(true, true); ?></strong></span>
+    				<img style="margin-bottom:5px" src="plugins/spotify/ressources/spotify_equipment.png"><br>    
+    				<span class="name"><?php echo $eqLogic->getHumanName(true, true); ?></span>
   				</div>
               
           	<?php endforeach; ?>
@@ -151,20 +153,21 @@ if( $code != '' ) {
   	<!-- Container du panneau de contrôle -->
    	<!-- ================================ -->
   	
-  	<div class="col-lg-10 col-md-9 col-sm-8 eqLogic" style="border-left: solid 1px #EEE; padding-left: 25px;display: none;">
-      
-        <!-- ================== -->
-    	<!-- Bouton sauvegarder -->
-        <!-- ================== -->
-      
-        <a class="btn btn-success eqLogicAction pull-right" data-action="save"><i class="fa fa-check-circle"></i> {{Sauvegarder}}</a>
-      	
-        <!-- ================ -->
-        <!-- Bouton Supprimer -->
-        <!-- ================ -->
-              
-      	<a class="btn btn-danger eqLogicAction pull-right" data-action="remove"><i class="fa fa-minus-circle"></i> {{Supprimer}}</a>
+  	<!-- <div class="col-lg-10 col-md-9 col-sm-8 eqLogic" style="display: none; padding-top: 5px; height: 710px; overflow: hidden auto;"> -->
+	<div class="col-lg-12 col-md-12 col-sm-12 eqLogic" style="display: none; padding-top: 5px; height: 710px; overflow: hidden auto;">
 
+        <!-- =============== -->
+		<!-- Boutons actions -->
+        <!-- =============== -->
+        
+		<div class="input-group pull-right" style="display:inline-flex">
+		
+        	<span class="input-group-btn">
+				<a class="btn btn-info btn-sm eqLogicAction roundedLeft" id="tokenize"><i class="fa fa-check-circle"></i> {{Tokenize}}</a><a class="btn btn-success btn-sm eqLogicAction" data-action="save"><i class="fa fa-check-circle"></i> {{Sauvegarder}}</a><a class="btn btn-danger btn-sm eqLogicAction roundedRight" data-action="remove"><i class="fa fa-minus-circle"></i> {{Supprimer}}</a>
+			</span>
+		
+		</div>
+                      
         <!-- ================= -->
 		<!-- Liste des onglets -->
         <!-- ================= -->
@@ -214,14 +217,8 @@ if( $code != '' ) {
             <!-- ================================== -->
         
 			<div role="tabpanel" class="tab-pane active" id="eqlogictab">
-
-                <!-- ============================= -->                
-                <!-- Bouton d'ajout d'une commande -->
-				<!-- ============================= -->                
-                  
-				<a class="btn btn-info btn-sm cmdAction pull-right" id="tokenize" style="margin-top:5px;"> <i class="fa fa-check-circle"></i> {{Tokenize}}</a>
-          		
-                <br><br>
+  
+                <br>
                   
                 <!-- ================ -->
           		<!-- Ligne de contenu -->
@@ -233,7 +230,8 @@ if( $code != '' ) {
                   	<!-- Division en colonne -->
             		<!-- =================== -->
                   
-                  	<div class="col-sm-7">
+                  	<!-- <div class="col-sm-7"> -->
+                  	<div class="col-sm-12">
               
                   		<!-- =================== -->
                   		<!-- Début du formulaire -->
@@ -248,24 +246,16 @@ if( $code != '' ) {
                   		<fieldset id="spotify_detail">
                   
                   			<div class="form-group">
-                    			<label class="col-sm-6 control-label">{{Nom équipement}}</label>
-                    			<div class="col-sm-6">
+                    			<label class="col-sm-3 control-label">{{Nom équipement}}</label>
+                    			<div class="col-sm-2">
 			                    	<input type="text" class="eqLogicAttr form-control" data-l1key="id" style="display : none"/> 
                       				<input type="text" class="eqLogicAttr form-control" data-l1key="name" placeholder="{{Nom de l'équipement}}"/>
                     			</div>
                   			</div>
                             
                   			<div class="form-group">
-                    			<label class="col-sm-6 control-label">{{Etat}}</label>
-                    			<div class="col-sm-6">
-                      				<label class="checkbox-inline"><input type="checkbox" class="eqLogicAttr" data-l1key="isEnable" checked/>{{Activer}}</label>
-                      				<label class="checkbox-inline"><input type="checkbox" class="eqLogicAttr" data-l1key="isVisible" checked/>{{Visible}}</label>
-                    			</div>
-                  			</div>
-                  
-                  			<div class="form-group">
-								<label class="col-sm-6 control-label" >{{Objet parent}}</label>
-								<div class="col-sm-6">
+								<label class="col-sm-3 control-label" >{{Objet parent}}</label>
+								<div class="col-sm-2">
 									<select class="form-control eqLogicAttr" data-l1key="object_id">
 										<option value="">{{Aucun}}</option>
 										<?php 
@@ -277,32 +267,45 @@ if( $code != '' ) {
 									</select>
 								</div>
 							</div>
-                                          
+  							
                             <div class="form-group">
-                    			<label class="col-sm-6 control-label">{{Code}}</label>
-                    			<div class="col-sm-6">
-			                    	<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="code"/>
+                    			<label class="col-sm-3 control-label">{{Etat}}</label>
+                    			<div class="col-sm-8">
+                                    <label class="checkbox-inline" style="display : none">
+                                          <input type="checkbox" class="eqLogicAttr" data-l1key="category" data-l2key="multimedia" checked/> {{Multimedia}}
+									</label>
+                      				<label class="checkbox-inline"><input type="checkbox" class="eqLogicAttr" data-l1key="isEnable" checked/>{{Activer}}</label>
+                      				<label class="checkbox-inline"><input type="checkbox" class="eqLogicAttr" data-l1key="isVisible" checked/>{{Visible}}</label>
                     			</div>
-                  			</div>
+                  			</div>                  
+                  			          
+                            <br>
                                           
                             <div class="form-group">
-                    			<label class="col-sm-6 control-label">{{Callback url}}</label>
-                    			<div class="col-sm-6">
+                    			<label class="col-sm-3 control-label">{{Callback url}}</label>
+                    			<div class="col-sm-8">
 			                    	<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="callback"/>
                     			</div>
                   			</div>
                                          
                             <div class="form-group">
-                    			<label class="col-sm-6 control-label">{{Access token}}</label>
-                    			<div class="col-sm-6">
-			                    	<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="access"/>
+                    			<label class="col-sm-3 control-label">{{Code}}</label>
+                    			<div class="col-sm-8">
+			                    	<textarea class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="code" rows="10"></textarea>
                     			</div>
                   			</div>
                                           
                             <div class="form-group">
-                    			<label class="col-sm-6 control-label">{{Refresh token}}</label>
-                    			<div class="col-sm-6">
-			                    	<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="refresh"/>
+                    			<label class="col-sm-3 control-label">{{Access token}}</label>
+                    			<div class="col-sm-8">
+			                    	<textarea class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="access" rows="4"></textarea>
+                    			</div>
+                  			</div>
+                                          
+                            <div class="form-group">
+                    			<label class="col-sm-3 control-label">{{Refresh token}}</label>
+                    			<div class="col-sm-8">
+			                    	<textarea class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="refresh" rows="4"></textarea>
                     			</div>
                   			</div>
                             
@@ -322,22 +325,22 @@ if( $code != '' ) {
                 <!-- Bouton d'ajout d'une commande -->
 				<!-- ============================= -->                
                   
-				<a class="btn btn-success btn-sm cmdAction pull-right" data-action="add" style="margin-top:5px;"> <i class="fa fa-plus-circle"></i> {{Commandes}}</a>
+				<!-- <a class="btn btn-success btn-sm cmdAction pull-right" data-action="add" style="margin-top:5px;"> <i class="fa fa-plus-circle"></i> {{Commandes}}</a>
           		
-                <br><br>
+                <br><br> -->
                   
           		<!-- ===================== -->
                 <!-- Tableau des commandes -->
                 <!-- ===================== -->
                   
-          		<table id="table_cmd" class="table table-bordered table-condensed">
+          		<table id="table_cmd" class="table table-bordered table-condensed ui-sortable">
             		<thead>
                 		<tr>
-                  			<th>{{Id}}</th>
-                  			<th>{{Name}}</th>
-                  			<th>{{Type}}</th>
-                  			<th>{{Historique}}</th>
-                  			<th>{{Actions}}</th>
+                  			<th width="10%">{{Id}}</th>
+                  			<th width="30%">{{Name}}</th>
+                  			<th width="20%">{{Type}}</th>
+                  			<th width="20%">{{Historique}}</th>
+                  			<th width="20%">{{Actions}}</th>
                 		</tr>
                 	</thead>
                 	<tbody>
@@ -353,7 +356,7 @@ if( $code != '' ) {
 </div>
                   
 <?php
-                  
+                                      
 include_file('desktop', 'spotify', 'js', 'spotify');                                     
 include_file('core', 'plugin.template', 'js');
 
