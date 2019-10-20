@@ -1,4 +1,9 @@
-﻿# 17-09-2019
+﻿# 20-10-2019
+
+- Ajout du support des devices compatibles castv2 
+- Corrections de bugs
+
+# 17-09-2019
 
 - Prise en compte du nouveau mécanisme de widget de la V4
 - Extension à toutes les playlists (pas uniquement les privées)

@@ -28,6 +28,8 @@ Depuis la page de configuration du plugin, installer les dépendances, puis coll
 
 ![plugin](https://barre35.github.io/jeedom-plugin-spotify/assets/images/plugin.png)
 
+Vous pouvez déclarer vos device castv2 sous la forme "192.168.1.214=chrome-cast-1|192.168.1.111=chrome-cast-2".
+
 Redémarrer le daemon du plugin
 
 Configuration
