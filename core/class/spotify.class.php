@@ -12,6 +12,238 @@ if (config::byKey( 'api', 'spotify') == '') {
 	config::save('api', config::genKey(), 'spotify');
 }
 
+class CastMessage {
+
+	public $protocolversion = 0; // CASTV2_1_0 - It's always this
+	public $source_id; // Source ID String
+	public $receiver_id; // Receiver ID String
+	public $urnnamespace; // Namespace
+	public $payloadtype = 0; // PayloadType String=0 Binary = 1
+	public $payloadutf8; // Payload
+
+  	private function hex_dump($data)
+    {
+      static $from = '';
+      static $to = '';
+
+      static $width = 16; # number of bytes per line
+
+      static $pad = '.'; # padding for non-visible characters
+
+      if ($from==='')
+      {
+        for ($i=0; $i<=0xFF; $i++)
+        {
+          $from .= chr($i);
+          $to .= ($i >= 0x20 && $i <= 0x7E) ? chr($i) : $pad;
+        }
+      }
+
+      $hex = str_split(bin2hex($data), $width*2);
+      $chars = str_split(strtr($data, $from, $to), $width);
+
+      $offset = 0;
+      foreach ($hex as $i => $line)
+      {
+        log::add('spotify', 'debug', sprintf('%6X',$offset).' : '.implode(' ', str_split($line,2)) . ' [' . $chars[$i] . ']' );
+        $offset += $width;
+      }
+      
+      return $txt;
+    }
+  
+  	public function decode( $binstring ) {
+      
+      	log::add('spotify', 'debug', '    --- DECODE --- BEGIN ---');
+      
+      	$index = 0;
+    	$size = strlen($binstring);
+      
+      	$this->hex_dump( $binstring);
+        
+      	$length = hex2bin( base_convert(
+          	( base_convert( bin2hex( substr( $binstring, $index++, 1) ), 16, 10 ) << 24 )          
+         + 	( base_convert( bin2hex( substr( $binstring, $index++, 1) ), 16, 10 ) << 16 )          
+         + 	( base_convert( bin2hex( substr( $binstring, $index++, 1) ), 16, 10 ) << 8 )          
+         +	( base_convert( bin2hex( substr( $binstring, $index++, 1) ), 16, 10 ) )
+        , 10, 16 ) );
+      
+      	$this->hex_dump( $length);
+      	
+      	while ( $index < $size ) {
+          
+          $next = base_convert( bin2hex( substr( $binstring, $index++, 1) ), 16, 10 );
+          $field = base_convert( ( ( $next & 0b11111000 ) >> 3 ), 10, 2 );         
+          $type = base_convert( ( $next & 0b111 ), 10, 2 );         
+
+          if( $field == "1" && $type == "0" ) {
+
+              $this->protocolversion = $this->binToVarint(substr( $binstring, $index++, 1));              
+              log::add('spotify', 'debug', '    --- PROTOCOL = "' . $this->protocolversion . '" ---');  
+              
+          } else if( $field == "10" && $type == "10" ) {
+
+			  $l_source_id = ord( substr( $binstring, $index++, 1) );                       
+              $this->source_id = substr( $binstring, $index, $l_source_id); 
+              $index+=$l_source_id;
+              log::add('spotify', 'debug', '    --- SOURCE ID = "' . $this->source_id . '" ---');  
+              
+          } else if( $field == "11" && $type == "10" ) {
+
+              $l_receiver_id = ord( substr( $binstring, $index++, 1) );                       
+              $this->receiver_id = substr( $binstring, $index, $l_receiver_id); 
+              $index+=$l_receiver_id;
+              log::add('spotify', 'debug', '    --- RECEIVER ID = "' . $this->receiver_id . '" ---');  
+              
+          } else if( $field == "100" && $type == "10" ) {
+
+			  $l_urnnamespace = ord( substr( $binstring, $index++, 1) );                       
+              $this->urnnamespace = substr( $binstring, $index, $l_urnnamespace); 
+              $index+=$l_urnnamespace;
+              log::add('spotify', 'debug', '    --- URNNAMESPACE = "' . $this->urnnamespace . '" ---');  
+              
+          } else if( $field == "101" && $type == "0" ) {
+
+			  $this->payloadtype = $this->binToVarint(substr( $binstring, $index++, 1));              
+              log::add('spotify', 'debug', '    --- PAYLOADTYPE = "' . $this->payloadtype . '" ---');
+              
+          } else if( $field == "110" && $type == "10" ) {
+
+			  $l_payloadutf8 = ord( substr( $binstring, $index++, 1) );      
+              if( $l_payloadutf8 > 128 ) {
+                $l_payloadutf8 = $l_payloadutf8 - 128 + ord( substr( $binstring, $index++, 1) ) * 128;
+              }
+              log::add('spotify', 'debug', '    --- PAYLOADLENGTH = "' . $l_payloadutf8 . '" ---');                                              	
+              $this->payloadutf8 = substr( $binstring, $index, $l_payloadutf8); 
+              $index+=$l_payloadutf8;
+              log::add('spotify', 'debug', '    --- PAYLOADUTF8 = "' . $this->payloadutf8 . '" ---');
+              
+          } else {
+            
+          	  log::add('spotify', 'debug', '    ??? FIELD = ' . $field . ' ---');	
+          	  log::add('spotify', 'debug', '    ??? TYPE = ' . $type . ' ---');
+          
+          }
+          
+    	}
+      
+      	log::add('spotify', 'debug', '    --- DECODE --- END ---');
+      
+    }
+  
+	public function encode() {
+
+      	log::add('spotify', 'debug', '    --- ENCODE --- BEGIN ---');
+      
+		$r = "";
+	
+        // Protocol version
+      	log::add('spotify', 'debug', '    --- PROTOCOL = "' . $this->protocolversion . '" ---');  
+		$r = "00001"; // Field Number 1
+		$r .= "000"; // Int
+		$r .= $this->varintToBin($this->protocolversion);
+              
+		// Source id
+      	log::add('spotify', 'debug', '    --- SOURCE ID = "' . $this->source_id . '" ---');
+    	$r .= "00010"; // Field Number 2
+		$r .= "010"; // String
+		$r .= $this->stringToBin($this->source_id);
+
+		// Receiver id
+		log::add('spotify', 'debug', '    --- RECEIVER ID = "' . $this->receiver_id . '" ---');  
+      	$r .= "00011"; // Field Number 3
+		$r .= "010"; // String
+		$r .= $this->stringToBin($this->receiver_id);
+
+		// Namespace
+      	log::add('spotify', 'debug', '    --- URNNAMESPACE = "' . $this->urnnamespace . '" ---');  
+		$r .= "00100"; // Field Number 4
+		$r .= "010"; // String
+		$r .= $this->stringToBin($this->urnnamespace);
+
+		// Payload type
+		log::add('spotify', 'debug', '    --- PAYLOADTYPE = "' . $this->payloadtype . '" ---');
+      	$r .= "00101"; // Field Number 5
+		$r .= "000"; // VarInt
+		$r .= $this->varintToBin($this->payloadtype);
+      
+		// Payload utf8
+		log::add('spotify', 'debug', '    --- PAYLOADUTF8 = "' . $this->payloadutf8 . '" ---');
+      	$r .= "00110"; // Field Number 6
+		$r .= "010"; // String
+		$r .= $this->stringToBin($this->payloadutf8);
+		
+		// Ignore payload_binary field 7 as never used
+
+		// Now convert it to a binary packet
+		$hexstring = "";
+		for ( $i=0; $i < strlen($r); $i=$i+8 ) {
+			$thischunk = substr($r,$i,8);
+			$hx = dechex(bindec($thischunk));
+			if (strlen($hx) == 1) { $hx = "0" . $hx; }
+			$hexstring .= $hx;
+		}
+		$l = strlen($hexstring) / 2;
+      	$l = dechex($l);
+		while (strlen($l) < 8) { $l = "0" . $l; }
+		$hexstring = $l . $hexstring;
+        $ret = hex2bin($hexstring);
+      	
+      	$this->hex_dump( $ret);
+      
+      	log::add('spotify', 'debug', '    --- ENCODE --- END ---');
+      
+		return $ret;
+      
+	}
+
+	private function binToVarint($inval) {
+	
+      return ( ( base_convert( substr( base_convert( $inval, 2, 16), 2, 2), 16, 10) & 0b1111111 ) * 128 ) + ( base_convert( substr( base_convert( $inval, 2, 16), 0, 2), 16, 10) & 0b1111111 );
+      
+    }
+    
+  	private function varintToBin($inval) {
+		// Convert an integer to a binary varint
+		// A variant is returned least significant part first.
+		// Number is represented in 7 bit portions. The 8th (MSB) of a byte represents if there
+		// is a following byte.
+		$r = array();
+		while ($inval / 128 > 1) {
+			$thisval = ($inval - ($inval % 128)) / 128;
+			array_push($r, $thisval);
+			$inval = $inval - ($thisval * 128);
+		}
+		array_push($r, $inval);
+		$r = array_reverse($r);
+		$binaryString = "";
+		$c = 1;
+		foreach ($r as $num) {
+			if ($c != sizeof($r)) { $num = $num + 128; }
+			$tv = decbin($num);
+			while (strlen($tv) < 8) { $tv = "0" . $tv; }
+			$c++;
+			$binaryString .= $tv;
+		}
+		return $binaryString;
+	}
+
+	private function stringToBin($string) {
+		// Convert a string to a Binary string
+		// First the length (note this is a binary varint)
+		$l = strlen($string);
+		$ret = "";
+		$ret = $this->varintToBin($l);
+		for ($i = 0; $i < $l; $i++) {
+			$n = decbin(ord(substr($string,$i,1)));
+			while (strlen($n) < 8) { $n = "0" . $n; }
+			$ret .= $n;
+		}
+		return $ret;
+	}
+
+}
+
 class spotify extends eqLogic {
 
   	/*************** Attributs ***************/
@@ -22,6 +254,9 @@ class spotify extends eqLogic {
 		$return = array('info' => array('string' => array()));
 		$return['info']['string']['Image'] = array(
 			'template' => 'tmplSpotifyImage'
+		);
+      	$return['action']['select']['Devices'] = array(
+			'template' => 'tmplSpotifyDevices'
 		);
 		return $return;
 	}
@@ -53,45 +288,45 @@ class spotify extends eqLogic {
 
   	public static function deamon_start() {
       
-        log::add('spotify', 'info', '--- DAEMON START ---');
+        log::add('spotify', 'debug', '--- DAEMON START ---');
       
       	$deamon_info = self::deamon_info();
-        log::add('spotify', 'info', '--- DAEMON info '.json_encode($deamon_info).'---');
+        log::add('spotify', 'debug', '--- DAEMON info '.json_encode($deamon_info).'---');
       
       	if ($deamon_info['state'] == 'nok') {
     
           $protocol = config::byKey('protocol', 'spotify');
-          log::add('spotify', 'info', '--- PROTOCOL = '.$protocol.' ---');
+          log::add('spotify', 'debug', '--- PROTOCOL = '.$protocol.' ---');
           
        	  $key = jeedom::getApiKey('spotify');
-		  log::add('spotify', 'info', '--- KEY = '.$key.' ---');
+		  log::add('spotify', 'debug', '--- KEY = '.$key.' ---');
       
           if( $protocol == 'HTTP' ) {
             $net = network::getNetworkAccess('internal');
-            log::add('spotify', 'info', '--- NET = '.$net.' ---');
+            log::add('spotify', 'debug', '--- NET = '.$net.' ---');
           } else {
             $net = network::getNetworkAccess('external');
-            log::add('spotify', 'info', '--- NET = '.$net.' ---');
+            log::add('spotify', 'debug', '--- NET = '.$net.' ---');
           }  
             
     	  $url = $net . '/plugins/spotify/core/ajax/spotify.ajax.php?action=account&api=' . $key;
-      	  log::add('spotify', 'info', '--- URL = '.$url.' ---');
+      	  log::add('spotify', 'debug', '--- URL = '.$url.' ---');
       		
           $loglevel = log::getLogLevel('spotify');
-          log::add('spotify', 'info', '--- LOG LEVEL = '.$loglevel.' ---');
+          log::add('spotify', 'debug', '--- LOG LEVEL = '.$loglevel.' ---');
       	
     	  if( $loglevel <= 200 ) {
             $log = log::getPathToLog('spotify_daemon');
 		  } else {
       	    $log = '/dev/null';
           }
-          log::add('spotify', 'info', '--- LOG = '.$log.' ---');
+          log::add('spotify', 'debug', '--- LOG = '.$log.' ---');
           
 	      $cmd = 'sudo nice -n 19 nodejs "/var/www/html/plugins/spotify/ressources/spotify.js" "' . $url . '" "true" "' . $protocol . '" > "' . $log . '" 2>&1 &';
-		  log::add('spotify', 'info', '--- CMD = '.$cmd.' ---');
+		  log::add('spotify', 'debug', '--- CMD = '.$cmd.' ---');
       		
     	  $result = exec($cmd);
-      	  // log::add('spotify', 'info', '--- RESULT = '.$result.' ---');
+      	  log::add('spotify', 'debug', '--- RESULT = '.$result.' ---');
                  
       	  if (strpos(strtolower($result), 'error') !== false || strpos(strtolower($result), 'traceback') !== false) {
 	   		log::add('spotify', 'error', '--- DAEMON START EXEC ERROR = '.$result.' ---');
@@ -102,13 +337,13 @@ class spotify extends eqLogic {
     	  while ($i < 30) {
       		
           	$deamon_info = self::deamon_info();
-          	log::add('spotify', 'info', '--- DAEMON info '.json_encode($deamon_info).'---');
+          	log::add('spotify', 'debug', '--- DAEMON info '.json_encode($deamon_info).'---');
           
       		if ($deamon_info['state'] == 'ok') {
         		break;
       		}
 	        
-          	log::add('spotify', 'info', '--- DAEMON START WAIT LOOP = '.$i.'---');
+          	log::add('spotify', 'debug', '--- DAEMON START WAIT LOOP = '.$i.'---');
       		sleep(1);
       		
           	$i++;
@@ -116,19 +351,19 @@ class spotify extends eqLogic {
       
     	  if ($i >= 30) {
 	   		
-          	log::add('spotify', 'error', '--- DAEMON START FAILURE ---');
+          	log::add('spotify', 'debug', '--- DAEMON START FAILURE ---');
       		return false;
           
     	  }
     	
       	  message::removeAll('spotify', 'unableStartDeamon');
-    	  log::add('spotify', 'info', '--- DAEMON START SUCCEED ---');
+    	  log::add('spotify', 'debug', '--- DAEMON START SUCCEED ---');
       
       	  return true;
         
         } else {
           
-          log::add('spotify', 'info', '--- DAEMON ALREADY STARTED ---');
+          log::add('spotify', 'debug', '--- DAEMON ALREADY STARTED ---');
       	  return false;
           
         }
@@ -137,53 +372,53 @@ class spotify extends eqLogic {
 
   	public static function deamon_stop() {
       
-      	log::add('spotify', 'info', '--- DAEMON STOP ---');
+      	log::add('spotify', 'debug', '--- DAEMON STOP ---');
    
       	$deamon_info = self::deamon_info();
-        log::add('spotify', 'info', '--- DAEMON INFO '.json_encode($deamon_info).'---');
+        log::add('spotify', 'debug', '--- DAEMON INFO '.json_encode($deamon_info).'---');
       
       	if ($deamon_info['state'] == 'ok') {
       
-      		log::add('spotify', 'info', '--- DAEMON FIRST STOP ---');
+      		log::add('spotify', 'debug', '--- DAEMON FIRST STOP ---');
       		
           	$cmd = 'sudo kill $(ps aux | grep "spotify.js" | awk \'{print $2}\')';
-          	log::add('spotify', 'info', '--- CMD = '.$cmd.' ---');
+          	log::add('spotify', 'debug', '--- CMD = '.$cmd.' ---');
           
           	$result = exec($cmd);
-      		//log::add('spotify', 'info', '--- RESULT = '.$result.' ---');
+      		log::add('spotify', 'debug', '--- RESULT = '.$result.' ---');
       
     		$deamon_info = self::deamon_info();
-        	log::add('spotify', 'info', '--- DAEMON INFO '.json_encode($deamon_info).'---');
+        	log::add('spotify', 'debug', '--- DAEMON INFO '.json_encode($deamon_info).'---');
       
     		if ($deamon_info['state'] == 'ok') {
               
-      			log::add('spotify', 'info', '--- DAEMON SECOND STOP ---');
+      			log::add('spotify', 'debug', '--- DAEMON SECOND STOP ---');
       		
               	$cmd = 'sudo kill -9 $(ps aux | grep "spotify.js" | awk \'{print $2}\')';
-              	log::add('spotify', 'info', '--- CMD = '.$cmd.' ---');
+              	log::add('spotify', 'debug', '--- CMD = '.$cmd.' ---');
               
           		$result = exec($cmd);
-          		//log::add('spotify', 'info', '--- RESULT = '.$result.' ---');
+          		log::add('spotify', 'debug', '--- RESULT = '.$result.' ---');
       
           		sleep(1);
           
     			$deamon_info = self::deamon_info();
-      			log::add('spotify', 'info', '--- DAEMON INFO '.json_encode($deamon_info).'---');
+      			log::add('spotify', 'debug', '--- DAEMON INFO '.json_encode($deamon_info).'---');
       
     			if ($deamon_info['state'] == 'ok') {
                   
-      				log::add('spotify', 'info', '--- DAEMON THIRD STOP ---');
+      				log::add('spotify', 'debug', '--- DAEMON THIRD STOP ---');
       		
                   	$cmd = 'sudo kill -9 $(ps aux | grep "spotify.js" | awk \'{print $2}\')';
-                  	log::add('spotify', 'info', '--- CMD = '.$cmd.' ---');
+                  	log::add('spotify', 'debug', '--- CMD = '.$cmd.' ---');
                   
           			$result = exec($cmd);
-          			//log::add('spotify', 'info', '--- RESULT = '.$result.' ---');
+          			log::add('spotify', 'debug', '--- RESULT = '.$result.' ---');
           
           			sleep(1);
               
               		$deamon_info = self::deamon_info();
-      				log::add('spotify', 'info', '--- DAEMON INFO '.json_encode($deamon_info).'---');
+      				log::add('spotify', 'debug', '--- DAEMON INFO '.json_encode($deamon_info).'---');
       
       				if ($deamon_info['state'] == 'ok') {
                       
@@ -196,12 +431,12 @@ class spotify extends eqLogic {
               
     		}
         
-          	log::add('spotify', 'info', '--- DAEMON STOP SUCCEED ---');
+          	log::add('spotify', 'debug', '--- DAEMON STOP SUCCEED ---');
       		return true;
         
         } else  {
       	
-      		log::add('spotify', 'info', '--- DAEMON ALREADY STOPPED ---');
+      		log::add('spotify', 'debug', '--- DAEMON ALREADY STOPPED ---');
       		return false;
         
     	}
@@ -213,7 +448,7 @@ class spotify extends eqLogic {
       
       	$return = array(); 
       
-		$return['log'] = 'spotify_update'; 
+		$return['log'] = 'getAccessToken'; 
 		$return['progress_file'] = '/tmp/spotify_dependancy'; 
       
       	system( "sudo /bin/bash ".dirname(__FILE__) . "/../../ressources/info.sh 2>/dev/null 1>&2",$code);
@@ -226,16 +461,16 @@ class spotify extends eqLogic {
 
   	public static function dependancy_install() {
     
-      	log::add('spotify', 'info', '--- DEPENDANCY INSTALL ---');
+      	log::add('spotify', 'debug', '--- DEPENDANCY INSTALL ---');
       
       	if (file_exists('/tmp/spotify_dependancy')) { 
 			return; 
 		} 
       
-		log::remove('spotify_update'); 
+		log::remove('getAccessToken'); 
       
 		$cmd = 'sudo /bin/bash ' . dirname(__FILE__) . '/../../ressources/install.sh'; 
-		$cmd .= ' >> ' . log::getPathToLog('spotify_update') . ' 2>&1 &'; 
+		$cmd .= ' >> ' . log::getPathToLog('getAccessToken') . ' 2>&1 &'; 
       
 		exec($cmd); 
       
@@ -243,7 +478,7 @@ class spotify extends eqLogic {
   
   	public function previous( $_options = array()) {
     	
-		$token = $this->refreshToken();
+		$token = $this->getAccessToken();
 		
       	if( $token != null ) {
       
@@ -268,7 +503,7 @@ class spotify extends eqLogic {
   
 	public function shuffle( $_options = array()) {
       
-    	$token = $this->refreshToken();
+    	$token = $this->getAccessToken();
 		
       	if( $token != null ) {
       
@@ -296,7 +531,7 @@ class spotify extends eqLogic {
   
     public function unshuffle( $_options = array()) {
       
-    	$token = $this->refreshToken();
+    	$token = $this->getAccessToken();
 		
       	if( $token != null ) {
       
@@ -324,7 +559,7 @@ class spotify extends eqLogic {
   
     public function play( $_options = array()) {
       
-    	$token = $this->refreshToken();
+    	$token = $this->getAccessToken();
 		
       	if( $token != null ) {
       
@@ -349,7 +584,7 @@ class spotify extends eqLogic {
   
   	public function pause( $_options = array()) {
       
-    	$token = $this->refreshToken();
+    	$token = $this->getAccessToken();
 		
       	if( $token != null ) {
       
@@ -374,8 +609,8 @@ class spotify extends eqLogic {
   
     public function device( $_options = array()) {
       
-    	$token = $this->refreshToken();
-		
+    	$token = $this->getAccessToken();
+      			
       	if( $token != null ) {
       
 			log::add('spotify', 'debug', '--- DEVICE REQUESTED ---'); 
@@ -415,7 +650,47 @@ class spotify extends eqLogic {
           
           	log::add('spotify', 'debug', '--- DEVICE ID = ' . $device . ' ---'); 
           
-          	if( playlist != '' ) {
+          	if( $device != '' && strpos($device, "local.") === 0 ) {
+            
+              	$ip  = str_replace("local.", "", $device );
+              	log::add('spotify', 'debug', '--- DEVICE --- ADDRESS = ' . $ip . ' ---'); 
+              
+              	$_device_id_set = $this->getCmd(null, 'device_id_set');
+              	$_list = $_device_id_set->getConfiguration('listValue');
+              	log::add('spotify', 'debug', '--- DEVICE LIST= ' . $_list . ' ---'); 
+              
+              	$_device = explode(";", $_list,50);
+	  			$length = count($_device);
+              	$name = "";
+              
+              	for ( $i = 0; $i < $length; $i++) {        
+  	  				$_content = explode("|", $_device[$i], 2);
+                  	log::add('spotify', 'debug', '--- DEVICE PARSE ' . $device . ' = ' .$_content[0] . ' / ' . $_content[1] . ' ---'); 
+                  	if(strtoupper($device)===strtoupper($_content[0])) {
+                      	$name = $_content[1];
+                      	log::add('spotify', 'infog', '--- NAME FOUND = ' . $name . ' ---'); 
+                      	break;
+                    }
+	  			}
+              
+              	$res = json_decode( $this->getCookieAccessToken() );
+              	
+              	$token = $res->{accessToken};
+              	log::add('spotify', 'info', '--- ACCESS TOKEN '.$token.' ---');
+      			$this->setConfiguration('accesscookie', $token);
+              
+              	$expire = $res->{accessTokenExpirationTimestampMs};
+             	log::add('spotify', 'info', '--- EXPIRE TOKEN '.$expire.' ---');
+      			$this->setConfiguration('expirecookie', $expire);
+          		$this->setConfiguration('_expirecookie', date("Y-m-d H:i:s",$expire/1000));
+              
+        		$this->save();
+              
+              	$this->castv2( $name, $ip, $token, $expire);
+              
+              	return true;
+                            
+            } else if( $device != '' ) {
               
           		$api = new SpotifyWebAPI\SpotifyWebAPI();
           
@@ -428,7 +703,7 @@ class spotify extends eqLogic {
 
           		return true;
               
-            } else {
+       		} else {
               
               	return false;
               
@@ -443,9 +718,182 @@ class spotify extends eqLogic {
       
     }
   
+    public function castv2( $name, $ip, $token, $expire) {
+      
+      	$device = "sender-0";
+      	$requestId = 1;
+      	
+      	// ====
+      	// OPEN
+      	// ====
+      
+      	log::add('spotify', 'debug', '--- OPEN CHROMECAST --- BEGIN ---');
+      
+		$contextOptions = ['ssl' => [ 'verify_peer' => false, 'verify_peer_name' => false ] ];
+      
+      	$context = stream_context_create($contextOptions);
+      
+		if ($socket = stream_socket_client('ssl://' . $ip . ":8009", $errno, $errstr, 30, STREAM_CLIENT_CONNECT, $context)) {
+          	stream_set_timeout($socket, 1);
+			log::add('spotify', 'debug', '--- OPEN CHROMECAST --- END ---'); 	
+		}
+		else {
+          	log::add('spotify', 'debug', 'ERROR ' . $errno . ' : ' . $errstr ); 
+          	log::add('spotify', 'debug', '--- OPEN CHROMECAST --- FAILED ---'); 
+          	throw new Exception("Failed to open chromecast");
+		}
+	
+      	// =======
+      	// CONNECT
+      	// =======
+      
+    	log::add('spotify', 'debug', '--- CONNECT CHROMECAST --- BEGIN ---');
+      
+		$c0 = new CastMessage();
+    	$c0->protocolversion = 0;
+		$c0->source_id = $device;
+		$c0->receiver_id = 'receiver-0';
+		$c0->urnnamespace = "urn:x-cast:com.google.cast.tp.connection";
+		$c0->payloadtype = 0;
+      	$c0->payloadutf8 = '{ "type" : "CONNECT" }';
+      
+      	fwrite($socket, $c0->encode());
+		fflush($socket);
+      
+    	log::add('spotify', 'debug', '--- CONNECT CHROMECAST --- END ---');
+    
+      	log::add('spotify', 'debug', '--- LAUNCH SPOTIFY --- BEGIN ---');
+
+      	$c3 = new CastMessage();
+      	$c3->source_id = $device;
+      	$c3->receiver_id = 'receiver-0';
+      	$c3->urnnamespace = "urn:x-cast:com.google.cast.receiver";
+      	$c3->payloadtype = 0;
+      	$c3->payloadutf8 = '{ "type" : "LAUNCH" , "appId" : "CC32E753", "requestId" : ' . $requestId++ . ' }';
+
+      	fwrite($socket, $c3->encode());
+      	fflush($socket);
+
+      	log::add('spotify', 'debug', '--- LAUNCH SPOTIFY --- END ---');
+      
+    	// ====
+      	// LOOP
+      	// ====
+      
+      	$loop = 60;
+      	
+    	while ( $loop-- >= 0 ) {
+        
+          	$response = fread($socket, 2000);
+          	log::add('spotify', 'debug', '--- LOOP CHROMECAST ( ' . $loop . ' ) <<< ' . $response . ' <<<');
+          
+          	$c1 = new CastMessage();
+          	$c1->decode( $response);
+          	          
+          	if( preg_match("/\"type\"\:\"([^\"]*)/", $c1->payloadutf8, $type) ) {
+          	
+          	  	log::add('spotify', 'info', '--- LOOP CHROMECAST ( ' . $loop . ' ) %%% ' . $type[1] . ' %%%');
+              
+                if ( $type[1] == "PING" ) {
+
+                    log::add('spotify', 'debug', '--- PING --- BEGIN ---');
+                  
+                  	$c2 = new CastMessage();
+                    $c2->protocolversion = 0;
+					$c2->source_id = $c1->receiver_id;
+                    $c2->receiver_id = $c1->source_id;
+                    $c2->urnnamespace = "urn:x-cast:com.google.cast.tp.heartbeat";
+                    $c2->payloadtype = 0;
+                    $c2->payloadutf8 = '{ "type":"PONG" }';
+
+                    fwrite($socket, $c2->encode());
+                    fflush($socket);
+                  
+                  	log::add('spotify', 'debug', '--- PING --- END ---');
+                
+                }  else if( $type[1] == "RECEIVER_STATUS" && preg_match("/\"transportId\"/", $c1->payloadutf8) && preg_match("/\"sessionId\"/", $c1->payloadutf8) ) {
+                 
+                	log::add('spotify', 'debug', '--- RECEIVER STATUS --- BEGIN ---');
+                  
+                  	preg_match("/\"transportId\"\:\"([^\"]*)/", $c1->payloadutf8, $matches);
+					$transportid = $matches[1];
+					log::add('spotify', 'debug', '--- WAIT SPOTIFY %%% TRANSPORT ID = ' . $transportid . ' ---');
+      
+					preg_match("/\"sessionId\"\:\"([^\"]*)/", $c1->payloadutf8, $matches);
+					$sessionid = $matches[1];
+					log::add('spotify', 'debug', '--- WAIT SPOTIFY %%% SESSION ID = ' . $sessionid . ' ---');  
+                  
+                  	log::add('spotify', 'debug', '--- RECEIVER STATUS --- END ---');
+                  
+                  	log::add('spotify', 'debug', '--- SPOTIFY CONNECT --- BEGIN ---');
+                  
+                  	$c5 = new CastMessage();
+                  	$c5->source_id = $device;
+                  	$c5->receiver_id = $transportid;
+                  	$c5->urnnamespace = "urn:x-cast:com.google.cast.tp.connection";
+					$c5->payloadtype = 0;
+      				$c5->payloadutf8 = '{ "type" : "CONNECT" }';
+				
+                  	fwrite($socket, $c5->encode());
+                  	fflush($socket);      
+                  	
+                  	log::add('spotify', 'debug', '--- SPOTIFY CONECT --- END ---');
+                  
+                  	log::add('spotify', 'debug', '--- SPOTIFY AUTH --- BEGIN ---');
+                  
+                  	$c4 = new CastMessage();
+                  	$c4->source_id = $device;
+                  	$c4->receiver_id = $transportid;
+                  	$c4->urnnamespace = "urn:x-cast:com.spotify.chromecast.secure.v1";
+                  	$c4->payloadtype = 0;
+                  	$c4->payloadutf8 = '{ "type" : "setCredentials", "credentials" : "' . $token . '", "expiresIn" : ' . $expire . ' }';
+				
+                  	log::add('spotify', 'info', $c4->payloadutf8);
+                  
+                  	fwrite($socket, $c4->encode());
+                  	fflush($socket);      
+                  	
+                  	log::add('spotify', 'debug', '--- SPOTIFY AUTH --- END ---');
+                  	
+                } else if ( $type[1] == "setCredentialsResponse" ) {
+                  
+                  	log::add('spotify', 'debug', '--- SPOTIFY OK --- BEGIN ---');
+                  
+                  	$api = new SpotifyWebAPI\SpotifyWebAPI();
+          
+        			$api->setAccessToken($token);    
+          
+                  	$api->setReturnType(SpotifyWebAPI\SpotifyWebAPI::RETURN_ASSOC);
+                  	$devices = $api->getMyDevices();
+                  
+                  	$id="";
+                  
+                  	foreach ($devices['devices'] as $device) {
+                  		log::add('spotify', 'debug', '--- ' . $name . ' ? ' . $device['id'] . ' / ' . $device['name'] . ' ---');
+                      	if( $device['name'] == $name ) {
+                          	log::add('spotify', 'debug', '%%% ' . $device['id'] . ' / ' . $device['name'] . ' %%%');
+                          	$option = Array();
+          					$option['device_ids'] = $device['id'];
+                  			$api->changeMyDevice($option);
+                          	break;
+                        }
+                    }
+                  
+                  	$loop = -1;
+                    
+                    log::add('spotify', 'debug', '--- SPOTIFY OK --- END ---');
+                  
+                }
+              
+            } 
+               
+        }
+      
+	} 
+  
     public function playlist( $_options = array()) {
       
-    	$token = $this->refreshToken();
+    	$token = $this->getAccessToken();
 		
       	if( $token != null ) {
       
@@ -486,7 +934,7 @@ class spotify extends eqLogic {
           
             log::add('spotify', 'debug', '--- PLAYLIST ID = ' . $playlist . ' ---'); 
           
-          	if( playlist != '' ) {
+          	if( $playlist != '' ) {
           
            		$api = new SpotifyWebAPI\SpotifyWebAPI();
           
@@ -523,7 +971,7 @@ class spotify extends eqLogic {
   
     public function volume( $_options = array()) {
       
-    	$token = $this->refreshToken();
+    	$token = $this->getAccessToken();
 		
       	if( $token != null ) {
       
@@ -551,7 +999,7 @@ class spotify extends eqLogic {
   
  	public function next( $_options = array()) {
     	
-		$token = $this->refreshToken();
+		$token = $this->getAccessToken();
 		
       	if( $token != null ) {
       
@@ -574,7 +1022,46 @@ class spotify extends eqLogic {
         
     }
   
-  	protected function refreshToken() {
+  	protected function getCookieAccessToken() {
+      
+    	$cookie = $this->getConfiguration('cookie');   
+      	log::add('spotify', 'info', '--- COOKIE '.$cookie.' ---');   
+
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL,            'https://open.spotify.com/access_token?reason=transport&productType=web_player' );
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1 );
+      	curl_setopt($ch, CURLOPT_HTTPHEADER,     array('cookie: '.$cookie)); 
+		$result=curl_exec($ch);
+      	
+      	log::add('spotify', 'info', '--- LIGHT ACCESS TOKEN '.$result.' ---');   
+      		
+      	return $result;
+      
+    }
+  
+    protected function getLightAccessToken() {
+      
+    	$clientid = config::byKey('clientid', 'spotify');      
+      	log::add('spotify', 'debug', '--- CLIENT ID '.$clientid.' ---');   
+      
+      	$clientsecret = config::byKey('clientsecret', 'spotify');
+      	log::add('spotify', 'debug', '--- CLIENT SECRET '.$clientsecret.' ---');   
+
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL,            'https://accounts.spotify.com/api/token' );
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1 );
+        curl_setopt($ch, CURLOPT_POST,           1 );
+        curl_setopt($ch, CURLOPT_POSTFIELDS,     'grant_type=client_credentials' ); 
+        curl_setopt($ch, CURLOPT_HTTPHEADER,     array('Authorization: Basic '.base64_encode($clientid.':'.$clientsecret))); 
+		$result=curl_exec($ch);
+      
+		log::add('spotify', 'info', '--- LIGHT ACCESS TOKEN '.$result.' ---');   
+      		
+      	return $result;
+      
+    }
+  
+  	protected function getAccessToken() {
   
     	$clientid = config::byKey('clientid', 'spotify');      
       	log::add('spotify', 'debug', '--- CLIENT ID '.$clientid.' ---');   
@@ -582,28 +1069,38 @@ class spotify extends eqLogic {
       	$clientsecret = config::byKey('clientsecret', 'spotify');
       	log::add('spotify', 'debug', '--- CLIENT SECRET '.$clientsecret.' ---');   
       
+      	$expire = $this->getConfiguration('expire');
+        log::add('spotify', 'debug', '--- EXPIRATION TIME '.$expire.' ---'); 
+      
+      	$access = $this->getConfiguration('access');
+        log::add('spotify', 'debug', '--- ACCESS TOKEN '.$access.' ---'); 
+      
       	$refresh = $this->getConfiguration('refresh');
         log::add('spotify', 'debug', '--- REFRESH TOKEN '.$refresh.' ---');    
       
-      	if( $refresh != '' ) {
+      	if( $expire - time() <= 0 ) {
           
         	$session = new SpotifyWebAPI\Session( $clientid, $clientsecret);
         	$session->refreshAccessToken($refresh);
-			$refresh = $session->getRefreshToken();
-      		$this->setConfiguration('refresh', $refresh);
+          
           	$access = $session->getAccessToken();
-      		log::add('spotify', 'debug', '--- ACCESS TOKEN '.$access.' ---');  
+      		log::add('spotify', 'debug', '--- ACCESS TOKEN '.$access.' ---');   
       		$this->setConfiguration('access', $access);
-      
-          	return $access;
           
-        } else {
-          
-         	log::add('spotify', 'debug', '--- REFRESH NOT AUTHORIZED ---#');  
-          
-          	return null;
+			$refresh = $session->getRefreshToken();
+      		log::add('spotify', 'debug', '--- REFRESH TOKEN '.$refresh.' ---');  
+         	$this->setConfiguration('refresh', $refresh);
+          	
+     		$expire = $session->getTokenExpiration() + time();
+      		log::add('spotify', 'debug', '--- EXPIRE '.$expire.' ---');  
+         	$this->setConfiguration('expire', $expire);          
+          	$this->setConfiguration('_expire', date($expire,"Y-m-d H:i:s"));
+              
+          	$this->save();
         }
       
+      	return $access;
+        
     }  
   
   	/**************** Methods ****************/

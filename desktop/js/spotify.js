@@ -74,7 +74,14 @@ function spotify_callback(code) {
               	console.log( '### REFRESH TOKEN = ' + refreshToken);
   				$("#spotify_detail").find('.eqLogicAttr[data-l1key=configuration][data-l2key=refresh]').val(refreshToken);
   	
-             
+             	expire = data.result.expire;
+              	console.log( '### EXPIRE = ' + expire);
+  				$("#spotify_detail").find('.eqLogicAttr[data-l1key=configuration][data-l2key=expire]').val(expire);
+              
+              	expire2 = data.result.expire2;
+              	console.log( '### EXPIRE = ' + expire2);
+  				$("#spotify_detail").find('.eqLogicAttr[data-l1key=configuration][data-l2key=_expire]').val(expire2);
+              
         	}
       	}
 	});

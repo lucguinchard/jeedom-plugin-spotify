@@ -281,33 +281,76 @@ if( $code != '' ) {
                   			          
                             <br>
                                           
-                            <div class="form-group">
+                            <div class="form-group" style="display : none">
                     			<label class="col-sm-3 control-label">{{Callback url}}</label>
                     			<div class="col-sm-8">
 			                    	<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="callback"/>
                     			</div>
                   			</div>
                                          
-                            <div class="form-group">
+                            <div class="form-group" style="display : none">
                     			<label class="col-sm-3 control-label">{{Code}}</label>
                     			<div class="col-sm-8">
-			                    	<textarea class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="code" rows="10"></textarea>
+			                    	<textarea class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="code" rows="8"></textarea>
+                    			</div>
+                  			</div>
+                              
+                            <div class="form-group" style="display : none">
+                    			<label class="col-sm-3 control-label">{{API Expire}}</label>
+                    			<div class="col-sm-8">
+			                    	<input readonly="readonly" type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="expire"/>
+                    			</div>
+                  			</div>
+                                      
+                            <div class="form-group">
+                    			<label class="col-sm-3 control-label">{{API Expire}}</label>
+                    			<div class="col-sm-8">
+			                    	<input readonly="readonly" type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="_expire"/>
+                    			</div>
+                  			</div>
+                                      
+                            <div class="form-group">
+                    			<label class="col-sm-3 control-label">{{API Access}}</label>
+                    			<div class="col-sm-8">
+			                    	<textarea readonly="readonly" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="access" rows="3"></textarea>
                     			</div>
                   			</div>
                                           
                             <div class="form-group">
-                    			<label class="col-sm-3 control-label">{{Access token}}</label>
+                    			<label class="col-sm-3 control-label">{{API Refresh}}</label>
                     			<div class="col-sm-8">
-			                    	<textarea class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="access" rows="4"></textarea>
+			                    	<textarea readonly="readonly" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="refresh" rows="2"></textarea>
                     			</div>
                   			</div>
-                                          
+                                      
                             <div class="form-group">
-                    			<label class="col-sm-3 control-label">{{Refresh token}}</label>
+                    			<label class="col-sm-3 control-label">{{Cookie}}</label>
                     			<div class="col-sm-8">
-			                    	<textarea class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="refresh" rows="4"></textarea>
+			                    	<textarea class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="cookie" rows="12"></textarea>
                     			</div>
                   			</div>
+                                      
+                            <div class="form-group" style="display : none">
+                    			<label class="col-sm-3 control-label">{{Cookie Expire}}</label>
+                    			<div class="col-sm-8">
+			                    	<input readonly="readonly" type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="expirecookie"/>
+                    			</div>
+                  			</div>
+                                   
+                            <div class="form-group">
+                    			<label class="col-sm-3 control-label">{{Cookie Expire}}</label>
+                    			<div class="col-sm-8">
+			                    	<input readonly="readonly" type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="_expirecookie"/>
+                    			</div>
+                  			</div>
+                            
+                            <div class="form-group">
+                    			<label class="col-sm-3 control-label">{{Cookie access}}</label>
+                    			<div class="col-sm-8">
+			                    	<textarea readonly="readonly" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="accesscookie" rows="3"></textarea>
+                    			</div>
+                  			</div>
+                                      
                             
                   		</fieldset>
                   

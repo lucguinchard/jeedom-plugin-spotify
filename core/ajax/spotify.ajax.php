@@ -99,31 +99,28 @@ try {
   	if (init('action') == 'device') {
       
       $id = init('id');
-      log::add('spotify', 'debug', '### ID '.$id.' ###'); 
+      log::add('spotify', 'info', '### ID '.$id.' ###'); 
       $cmd = spotify::byId($id); 
                               
       $device_id = init('device_id');
-      log::add('spotify', 'debug', '### DEVICE ID '.$device_id.' ###'); 
+      log::add('spotify', 'info', '### DEVICE ID '.$device_id.' ###'); 
       $_device_id = explode("|", $device_id);
       
       $device_name = init('device_name');
-      log::add('spotify', 'debug', '### DEVICE NAME '.$device_name.' ###'); 
+      log::add('spotify', 'info', '### DEVICE NAME '.$device_name.' ###'); 
       $_device_name = explode("|", $device_name);
       
       $device_volume = init('device_volume');
-      log::add('spotify', 'debug', '### DEVICE VOLUME '.$device_volume.' ###'); 
+      log::add('spotify', 'info', '### DEVICE VOLUME '.$device_volume.' ###'); 
       $_device_volume = explode("|", $device_volume);
       
       $device_is_active = init('device_is_active');
-      log::add('spotify', 'debug', '### DEVICE IS ACTIVE '.$device_is_active.' ###'); 
+      log::add('spotify', 'info', '### DEVICE IS ACTIVE '.$device_is_active.' ###'); 
  	  $_device_is_active = explode("|", $device_is_active);
       
       $device_type = init('device_type');
-      log::add('spotify', 'debug', '### DEVICE TYPE '.$device_type.' ###'); 
+      log::add('spotify', 'info', '### DEVICE TYPE '.$device_type.' ###'); 
  	  $_device_type = explode("|", $device_type);
-      
-      $length = count($_device_id);
-      log::add('spotify', 'debug', '### LENGTH '.$length.' ###'); 
       
       $separator = '';
       $list = '';
@@ -132,7 +129,39 @@ try {
       $current_volume = '0';
       $current_is_active = 'false';
       
-	  for ( $i = 0; $i < $length; $i++) {   
+	  $castclient = config::byKey('castdevice', 'spotify'); 
+      log::add('spotify', 'info', '### CAST CLIENT '.$castclient.' ###'); 
+      
+      if( $castclient != "" ) {
+        $_castclient = explode("|", $castclient);
+        $length = count($_castclient);
+        log::add('spotify', 'info', '### CAST LENGTH '.$length.' ###'); 
+
+        for ( $i = 0; $i < $length; $i++) {   
+          $__castclient = explode("=", $_castclient[$i]);  
+          log::add('spotify', 'info', '### EXTRA NAME '.$__castclient[1].' ###'); 
+          $found=false;
+          $_length = count($_device_name);
+          for ( $j = 0; $j < $_length; $j++) { 
+            $device_name = str_replace(' ', '_', $_device_name[$j]);
+            if( $device_name == $__castclient[1] ) {
+              $found = true;
+              log::add('spotify', 'info', '### EXTRA NAME DUPLICATED ###'); 
+              break;
+            }
+          }
+          if( $found == false ) {
+              log::add('spotify', 'info', '### EXTRA NAME OK ###'); 
+              $list = $list . $separator . 'local.' . $__castclient[0] . '|' . $__castclient[1];
+              $separator = ';'; 
+          }
+        }
+      }
+      
+      $length = count($_device_id);
+      log::add('spotify', 'info', '### LENGTH '.$length.' ###'); 
+      
+      for ( $i = 0; $i < $length; $i++) {   
         $device_name = str_replace(' ', '_', $_device_name[$i]);
         $list = $list . $separator . $_device_id[$i] . '|' . $device_name;
         $separator = ';';        
@@ -144,6 +173,8 @@ try {
         }
 	  }
       
+      
+      	
       log::add('spotify', 'info', '### LIST '.$list.' ###'); 
       
       log::add('spotify', 'info', '### CURRENT DEVICE ID '.$current_id.' ###'); 
@@ -384,8 +415,13 @@ try {
 		$refreshToken = $session->getRefreshToken();
       	log::add('spotify', 'debug', '### REFRESH TOKEN '.$refreshToken.' ###');  
          
+     	$expire = $session->getTokenExpiration();
+      	log::add('spotify', 'debug', '### EXPIRE '.$expire.' ###');  
+         
      	$result['accessToken'] = $accessToken;
       	$result['refreshToken'] = $refreshToken;
+      	$result['expire'] = $expire;      
+      	$result['expire2'] = date("Y-m-d H:i:s",$expire); 
       
     	ajax::success( $result );
       

@@ -33,5 +33,11 @@ if (!isConnect('admin')) {
 				</select>   
    			</div>
  		</div>
+  		<div class="form-group">
+    		<label class="col-lg-4 control-label">{{Cast Devices}}</label>
+    		<div class="col-lg-4">
+     			<input class="configKey form-control" data-l1key="castdevice" />
+   			</div>
+ 		</div>
 	</fieldset>
 </form>
