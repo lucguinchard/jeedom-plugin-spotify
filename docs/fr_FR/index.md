@@ -117,5 +117,5 @@ Chaque équipement dispose des commandes réparties dans les catégories suivant
 Pour aller plus loin
 ===
 
-Penser à noter le plugin sur le market et faites part de vos remarques, demandes d'évolutions et bugs sur le forum [https://www.jeedom.com/forum/viewtopic.php?f=142&t=45483](https://www.jeedom.com/forum/viewtopic.php?f=142&t=45483)
+Penser à noter le plugin sur le market et faites part de vos remarques, demandes d'évolutions et bugs sur le forum [https://community.jeedom.com/t/plugin-tiers-spotify/4785](https://community.jeedom.com/t/plugin-tiers-spotify/4785)
 
