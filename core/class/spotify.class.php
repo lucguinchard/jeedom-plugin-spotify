@@ -1091,7 +1091,7 @@ class spotify extends eqLogic {
       		log::add('spotify', 'debug', '--- REFRESH TOKEN '.$refresh.' ---');  
          	$this->setConfiguration('refresh', $refresh);
           	
-     		$expire = $session->getTokenExpiration() + time();
+     		$expire = $session->getTokenExpiration();
       		log::add('spotify', 'debug', '--- EXPIRE '.$expire.' ---');  
          	$this->setConfiguration('expire', $expire);          
           	$this->setConfiguration('_expire', date("Y-m-d H:i:s",$expire));
