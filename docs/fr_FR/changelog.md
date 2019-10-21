@@ -1,4 +1,8 @@
-﻿# 20-10-2019
+﻿# 21-10-2019
+
+- Correction d'un problème sur refresh token de spotify connect API
+
+# 20-10-2019
 
 - Ajout du support des devices compatibles castv2 
 - Corrections de bugs
