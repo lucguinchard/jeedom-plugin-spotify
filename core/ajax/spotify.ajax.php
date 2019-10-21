@@ -48,9 +48,12 @@ try {
       $shufflecallback = $url.'/plugins/spotify/core/ajax/spotify.ajax.php?api=#APIKEY#&id=#ID#&state=#STATE#&action=shuffle';
       log::add('spotify', 'debug', '### SHUFFLE CALLBACK '.$shufflecallback.' ###'); 
       
+      $refreshcallback = $url.'/plugins/spotify/core/ajax/spotify.ajax.php?api=#APIKEY#&id=#ID#&action=refresh_token';
+      log::add('spotify', 'debug', '### SHUFFLE CALLBACK '.$refreshcallback.' ###'); 
+      
       $result['apikey'] = $apikey;
-      $result['clientid'] = $clientid;
-      $result['clientsecret'] = $clientsecret;
+      //$result['clientid'] = $clientid;
+      //$result['clientsecret'] = $clientsecret;
       
       $_eq = eqLogic::byType('spotify', true);
       $length = count($_eq);
@@ -75,6 +78,7 @@ try {
       $result['devicecallback'] = $devicecallback;
       $result['playlistcallback'] = $playlistcallback;      
       $result['shufflecallback'] = $shufflecallback;  
+      $result['refreshcallback'] = $refreshcallback;  
       
       ajax::success($result);
       
@@ -422,6 +426,29 @@ try {
       	$result['refreshToken'] = $refreshToken;
       	$result['expire'] = $expire;      
       	$result['expire2'] = date("Y-m-d H:i:s",$expire); 
+      
+    	ajax::success( $result );
+      
+    }
+  
+    if (init('action') == 'refresh_token') {
+  
+      	$id = init('id');
+      	log::add('spotify', 'debug', '### ID '.$id.' ###');       	
+      
+      	$i = init('i');
+      	log::add('spotify', 'debug', '### I '.$i.' ###'); 
+      
+      	$cmd = spotify::byId($id); 
+      
+      	$accessToken = $cmd->getAccessToken();
+      	log::add('spotify', 'debug', '### ACCESS TOKEN '.$accessToken.' ###');  
+      
+		$result['access'] = $cmd->getConfiguration('access');
+      	$result['refresh'] = $cmd->getConfiguration('refresh');
+      	$result['expire'] = $cmd->getConfiguration('expire');     
+      	$result['i'] = $i; 
+      	$result['id'] = $id;
       
     	ajax::success( $result );
       

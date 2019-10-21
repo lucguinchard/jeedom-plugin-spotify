@@ -1,4 +1,8 @@
-﻿# 21-10-2019
+﻿# 22-10-2019
+
+- Mutualisation des clés entre le widget et le daemon
+
+# 21-10-2019
 
 - Correction d'un problème sur refresh token de spotify connect API
 

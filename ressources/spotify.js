@@ -26,22 +26,25 @@ var context_uri = Array();
 var playlist_id = Array();
 var playlist_name = Array();
 
-function spotifyCheck( _apikey, _index, _clientid, _clientsecret, _command, _refresh, _itemcallback, _devicecallback, _playlistcallback) {
+//function spotifyCheck( _apikey, _index, _clientid, _clientsecret, _command, _refresh, _itemcallback, _devicecallback, _playlistcallback) {
+function spotifyCheck( _apikey, _index, _command, _access, _refresh, _expire, _itemcallback, _devicecallback, _playlistcallback) {
 
-  var spotifyApi = new SpotifyWebApi({
-  	clientId: _clientid,
-  	clientSecret: _clientsecret
-  });
+  //var spotifyApi = new SpotifyWebApi({
+  //	clientId: _clientid,
+  //	clientSecret: _clientsecret
+  //});
 
-  spotifyApi.setRefreshToken(_refresh);
+  var spotifyApi = new SpotifyWebApi();
+    
+  //spotifyApi.setRefreshToken(_refresh);
 
   // =============
   // REFRESH TOKEN 
   // =============
   
-  spotifyApi.refreshAccessToken().then( function(data) {
+  //spotifyApi.refreshAccessToken().then( function(data) {
     
-    _access = data.body['access_token'];
+    //_access = data.body['access_token'];
     spotifyApi.setAccessToken(_access);
     
     // ==============
@@ -325,11 +328,11 @@ function spotifyCheck( _apikey, _index, _clientid, _clientsecret, _command, _ref
 
     });
       
-  }, function(err) {
+  //}, function(err) {
     
-    console.log('--- Failed Refresh Token ---', err);
+  //  console.log('--- Failed Refresh Token ---', err);
     
-  });
+  //});
   
 }
 
@@ -360,8 +363,8 @@ if( protocol == 'HTTP' ) {
           var _data = JSON.parse(data);
 
           _apikey = _data['result']['apikey'];
-          _clientid = _data['result']['clientid'];
-          _clientsecret = _data['result']['clientsecret'];
+          //_clientid = _data['result']['clientid'];
+          //_clientsecret = _data['result']['clientsecret'];
 
           _commands = JSON.parse(_data['result']['commands']);    
 
@@ -369,6 +372,7 @@ if( protocol == 'HTTP' ) {
           _devicecallback = _data['result']['devicecallback'];
           _playlistcallback = _data['result']['playlistcallback'];
 		  _shufflecallback = _data['result']['shufflecallback'];
+          _refreshcallback = _data['result']['refreshcallback'];
         
           console.log("--- RUNNING ---");
           started = true;
@@ -390,8 +394,8 @@ if( protocol == 'HTTP' ) {
           var _data = JSON.parse(data);
 
           _apikey = _data['result']['apikey'];
-          _clientid = _data['result']['clientid'];
-          _clientsecret = _data['result']['clientsecret'];
+          //_clientid = _data['result']['clientid'];
+          //_clientsecret = _data['result']['clientsecret'];
 
           _commands = JSON.parse(_data['result']['commands']);    
 
@@ -399,6 +403,7 @@ if( protocol == 'HTTP' ) {
           _devicecallback = _data['result']['devicecallback'];
           _playlistcallback = _data['result']['playlistcallback'];
 		  _shufflecallback = _data['result']['shufflecallback'];
+       	  _refreshcallback = _data['result']['refreshcallback'];
         
           console.log("--- RUNNING ---");
           started = true;
@@ -418,9 +423,67 @@ function spotifyLoop() {
 		// if( debug == 'true') console.log("--- LOOPING ---");
   	
 		for ( var i = 0; i < _commands.length; i++) {
-              
-	  		spotifyCheck( _apikey, i, _clientid, _clientsecret, _commands[i].id, _commands[i].token, _itemcallback, _devicecallback, _playlistcallback);
-              
+            
+          	if( debug == 'true') console.log('=================== BEGIN REFRESH ==========================');
+        
+  			var _url = _refreshcallback;
+
+  			_url = _url.replace('#APIKEY#', _apikey);
+  			if( debug == 'true') console.log('--- API KEY '+_apikey+' ---');
+
+  			_url = _url.replace('#ID#', _commands[i].id);
+  			if( debug == 'true') console.log('--- ID '+_commands[i].id+' ---');
+
+          	if( debug == 'true') console.log('--- REFRESH URL '+_url+' ---');
+          
+  			if( protocol == 'HTTP' ) {
+    			http.get( _url, (resp) => { 
+                	let data = '';
+      				resp.on('data', (chunk) => {
+          				data += chunk;
+      				} );
+      				resp.on('end', () => {
+                      	var _data = JSON.parse(data);  
+                      	_i = _data['result']['i'];
+                  		if( debug == 'true') console.log('--- I '+_i+' ---');
+          				_id = _data['result']['id'];
+                  		if( debug == 'true') console.log('--- ID '+_id+' ---');
+          				_access = _data['result']['access'];
+                      	if( debug == 'true') console.log('--- ACCESS '+_access+' ---');
+          				_refresh = _data['result']['refresh'];
+                      	if( debug == 'true') console.log('--- REFRESH '+_refresh+' ---');
+          				_expire = _data['result']['expire'];
+                  		if( debug == 'true') console.log('--- EXPIRE '+_expire+' ---');
+          				spotifyCheck( _apikey, _i, _id, _access, _refresh, _expire, _itemcallback, _devicecallback, _playlistcallback); 
+                    } );
+                } );
+  			} else {
+    			https.get(_url, (resp) => { 
+                	let data = '';
+      				resp.on('data', (chunk) => {
+          				data += chunk;
+      				} );
+      				resp.on('end', () => {
+          				var _data = JSON.parse(data);  
+                      	_i = _data['result']['i'];
+                  		if( debug == 'true') console.log('--- I '+_i+' ---');
+          				_id = _data['result']['id'];
+                  		if( debug == 'true') console.log('--- ID '+_id+' ---');
+          				_access = _data['result']['access'];
+                      	if( debug == 'true') console.log('--- ACCESS '+_access+' ---');
+          				_refresh = _data['result']['refresh'];
+                      	if( debug == 'true') console.log('--- REFRESH '+_refresh+' ---');
+          				_expire = _data['result']['expire'];
+                  		if( debug == 'true') console.log('--- EXPIRE '+_expire+' ---');
+          				spotifyCheck( _apikey, _i, _id, _access, _refresh, _expire, _itemcallback, _devicecallback, _playlistcallback); 
+                    } );
+            	} );
+  			}
+          
+          	if( debug == 'true') console.log('=================== END REFRESH ==========================');
+          
+	  		//spotifyCheck( _apikey, i, _clientid, _clientsecret, _commands[i].id, _commands[i].token, _itemcallback, _devicecallback, _playlistcallback);
+          
 		}
       
     } else {

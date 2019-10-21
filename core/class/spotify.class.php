@@ -1061,7 +1061,7 @@ class spotify extends eqLogic {
       
     }
   
-  	protected function getAccessToken() {
+  	public function getAccessToken() {
   
     	$clientid = config::byKey('clientid', 'spotify');      
       	log::add('spotify', 'debug', '--- CLIENT ID '.$clientid.' ---');   
