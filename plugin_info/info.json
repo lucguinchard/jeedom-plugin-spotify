@@ -1,6 +1,6 @@
 {
   "id" : "spotify",
-  "name": "spotify",
+  "name": "Spotify",
   "description" : "Plugin pour le pilotage spotify connect",
   "licence": "GPL",
   "author": "sbarre35",

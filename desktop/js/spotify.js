@@ -129,7 +129,7 @@ $('#tokenize').click(function(e) {
               
               	console.log( data.result);
               
-              	spotify_window = window.open( data.result, 'Spotify', 'menubar=no,location=no,resizable=no,scrollbars=no,status=no, width=' + width + ', height=' + height + ', top=' + top + ', left=' + left );
+              	spotify_window = window.open( data.result, '_blank', 'menubar=no,location=no,resizable=no,scrollbars=no,status=no, width=' + width + ', height=' + height + ', top=' + top + ', left=' + left );
              
         	}
       	}

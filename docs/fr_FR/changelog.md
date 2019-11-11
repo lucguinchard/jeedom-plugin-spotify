@@ -1,4 +1,13 @@
-﻿# 22-10-2019
+﻿# 11-11-2019
+
+- Correction d'un problème suite à des tests avec plusieurs équipements
+- Correction d'un problème de refresh token intempestifs depuis le daemon 
+
+# 23-10-2019
+
+- Correction d'un probléme de compatibilité de navigateur sur la fonction tokenize
+
+# 22-10-2019
 
 - Mutualisation des clés entre le widget et le daemon
 

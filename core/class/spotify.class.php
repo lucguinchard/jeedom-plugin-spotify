@@ -265,7 +265,7 @@ class spotify extends eqLogic {
 
   	public static function deamon_info() {
     
-    	log::add('spotify', 'debug', '--- DAEMON INFO ---');
+    	//log::add('spotify', 'debug', '--- DAEMON INFO ---');
       
       	$return = array();
       
@@ -275,10 +275,10 @@ class spotify extends eqLogic {
         $pid = trim( shell_exec ('ps ax | grep "spotify.js" | grep -v "grep" | wc -l') );
     
       	if ($pid != '' && $pid != '0') {
-          	log::add('spotify', 'debug', '--- DAEMON PID = '.$pid.' ---');
+          	// log::add('spotify', 'debug', '--- DAEMON PID = '.$pid.' ---');
       		$return['state'] = 'ok';
     	} else  {
-      		log::add('spotify', 'debug', '--- DAEMON NOT LAUNCH ---');
+      		// log::add('spotify', 'debug', '--- DAEMON NOT LAUNCH ---');
 			$return['state'] = 'nok';			
         }
       
@@ -676,11 +676,11 @@ class spotify extends eqLogic {
               	$res = json_decode( $this->getCookieAccessToken() );
               	
               	$token = $res->{accessToken};
-              	log::add('spotify', 'info', '--- ACCESS TOKEN '.$token.' ---');
+              	log::add('spotify', 'debug', '--- ACCESS TOKEN '.$token.' ---');
       			$this->setConfiguration('accesscookie', $token);
               
               	$expire = $res->{accessTokenExpirationTimestampMs};
-             	log::add('spotify', 'info', '--- EXPIRE TOKEN '.$expire.' ---');
+             	log::add('spotify', 'debug', '--- EXPIRE TOKEN '.$expire.' ---');
       			$this->setConfiguration('expirecookie', $expire);
           		$this->setConfiguration('_expirecookie', date("Y-m-d H:i:s",$expire/1000));
               
@@ -792,7 +792,7 @@ class spotify extends eqLogic {
           	          
           	if( preg_match("/\"type\"\:\"([^\"]*)/", $c1->payloadutf8, $type) ) {
           	
-          	  	log::add('spotify', 'info', '--- LOOP CHROMECAST ( ' . $loop . ' ) %%% ' . $type[1] . ' %%%');
+          	  	log::add('spotify', 'debug', '--- LOOP CHROMECAST ( ' . $loop . ' ) %%% ' . $type[1] . ' %%%');
               
                 if ( $type[1] == "PING" ) {
 
@@ -848,7 +848,7 @@ class spotify extends eqLogic {
                   	$c4->payloadtype = 0;
                   	$c4->payloadutf8 = '{ "type" : "setCredentials", "credentials" : "' . $token . '", "expiresIn" : ' . $expire . ' }';
 				
-                  	log::add('spotify', 'info', $c4->payloadutf8);
+                  	log::add('spotify', 'debug', $c4->payloadutf8);
                   
                   	fwrite($socket, $c4->encode());
                   	fflush($socket);      
@@ -1025,7 +1025,7 @@ class spotify extends eqLogic {
   	protected function getCookieAccessToken() {
       
     	$cookie = $this->getConfiguration('cookie');   
-      	log::add('spotify', 'info', '--- COOKIE '.$cookie.' ---');   
+      	log::add('spotify', 'debug', '--- COOKIE '.$cookie.' ---');   
 
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL,            'https://open.spotify.com/access_token?reason=transport&productType=web_player' );
@@ -1033,7 +1033,7 @@ class spotify extends eqLogic {
       	curl_setopt($ch, CURLOPT_HTTPHEADER,     array('cookie: '.$cookie)); 
 		$result=curl_exec($ch);
       	
-      	log::add('spotify', 'info', '--- LIGHT ACCESS TOKEN '.$result.' ---');   
+      	log::add('spotify', 'debug', '--- LIGHT ACCESS TOKEN '.$result.' ---');   
       		
       	return $result;
       
@@ -1055,7 +1055,7 @@ class spotify extends eqLogic {
         curl_setopt($ch, CURLOPT_HTTPHEADER,     array('Authorization: Basic '.base64_encode($clientid.':'.$clientsecret))); 
 		$result=curl_exec($ch);
       
-		log::add('spotify', 'info', '--- LIGHT ACCESS TOKEN '.$result.' ---');   
+		log::add('spotify', 'debug', '--- LIGHT ACCESS TOKEN '.$result.' ---');   
       		
       	return $result;
       
@@ -1580,7 +1580,7 @@ class spotifyCmd extends cmd {
       
       	$value = cmd::formatValue( $_value, $_quote);
       	
-      	log::add('spotify', 'debug', '### FORMAT VALUE '.$this->getLogicalId().' / '.json_encode($_value).' / '.json_encode($_quote).' / '.json_encode($value).' ###');    
+      	//log::add('spotify', 'debug', '--- FORMAT VALUE '.$this->getLogicalId().' / '.json_encode($_value).' / '.json_encode($_quote).' / '.json_encode($value).' ---');    
       	
       	return $value;
       
@@ -1590,7 +1590,7 @@ class spotifyCmd extends cmd {
     
       	$value = cmd::getCmdValue();
       
-      	log::add('spotify', 'debug', '### GET CMD VALUE '.$this->getLogicalId().' / '.json_encode($value).' ###');    
+      	//log::add('spotify', 'debug', '--- GET CMD VALUE '.$this->getLogicalId().' / '.json_encode($value).' ---');    
       	
       	return $value;
       
@@ -1600,7 +1600,7 @@ class spotifyCmd extends cmd {
     
       	$value = cmd::getValue();
       
-      	log::add('spotify', 'debug', '### GET VALUE '.$this->getLogicalId().' / '.json_encode($value).' ###');    
+      	//log::add('spotify', 'debug', '--- GET VALUE '.$this->getLogicalId().' / '.json_encode($value).' ---');    
       	
       	return $value;
       
@@ -1611,7 +1611,7 @@ class spotifyCmd extends cmd {
       	if ($this->getLogicalId() == 'previous')
       	{
         	
-          	log::add('spotify', 'debug', '### EXECUTE '.$this->getLogicalId().' / '.json_encode($_options).' ###');    
+          	log::add('spotify', 'debug', '--- EXECUTE '.$this->getLogicalId().' / '.json_encode($_options).' ---');    
             $this->getEqLogic()->previous( $_options);
 
       	}
@@ -1619,7 +1619,7 @@ class spotifyCmd extends cmd {
       	if ($this->getLogicalId() == 'next')
       	{
         	
-          	log::add('spotify', 'debug', '### EXECUTE '.$this->getLogicalId().' / '.json_encode($_options).' ###');    
+          	log::add('spotify', 'debug', '--- EXECUTE '.$this->getLogicalId().' / '.json_encode($_options).' ---');    
             $this->getEqLogic()->next( $_options);
 
       	}
@@ -1627,7 +1627,7 @@ class spotifyCmd extends cmd {
       	if ($this->getLogicalId() == 'play')
       	{
         	
-          	log::add('spotify', 'debug', '### EXECUTE '.$this->getLogicalId().' / '.json_encode($_options).' ###');    
+          	log::add('spotify', 'debug', '--- EXECUTE '.$this->getLogicalId().' / '.json_encode($_options).' ---');    
             $this->getEqLogic()->play( $_options);
 
       	}
@@ -1635,64 +1635,64 @@ class spotifyCmd extends cmd {
       	if ($this->getLogicalId() == 'pause')
       	{
         	
-          	log::add('spotify', 'debug', '### EXECUTE '.$this->getLogicalId().' / '.json_encode($_options).' ###');            
-          	$this->getEqLogic()->pause( $_options);
+          	log::add('spotify', 'debug', '--- EXECUTE '.$this->getLogicalId().' / '.json_encode($_options).' ---');    
+            $this->getEqLogic()->pause( $_options);
 
       	}
       
         if ($this->getLogicalId() == 'shuffle')
       	{
         	
-          	log::add('spotify', 'debug', '### EXECUTE '.$this->getLogicalId().' / '.json_encode($_options).' ###');            
-          	$this->getEqLogic()->shuffle( $_options);
+          	log::add('spotify', 'debug', '--- EXECUTE '.$this->getLogicalId().' / '.json_encode($_options).' ---');    
+            $this->getEqLogic()->shuffle( $_options);
 
       	}
       
         if ($this->getLogicalId() == 'unshuffle')
       	{
         	
-          	log::add('spotify', 'debug', '### EXECUTE '.$this->getLogicalId().' / '.json_encode($_options).' ###');            
-          	$this->getEqLogic()->unshuffle( $_options);
+          	log::add('spotify', 'debug', '--- EXECUTE '.$this->getLogicalId().' / '.json_encode($_options).' ---');    
+            $this->getEqLogic()->unshuffle( $_options);
 
       	}
       
         if ($this->getLogicalId() == 'device_volume_set')
       	{
         	
-          	log::add('spotify', 'debug', '### EXECUTE '.$this->getLogicalId().' / '.json_encode($_options).' ###');            
-          	$this->getEqLogic()->volume( $_options);
+          	log::add('spotify', 'debug', '--- EXECUTE '.$this->getLogicalId().' / '.json_encode($_options).' ---');    
+            $this->getEqLogic()->volume( $_options);
 
       	}
       
         if ($this->getLogicalId() == 'device_id_set')
       	{
         	
-          	log::add('spotify', 'debug', '### EXECUTE '.$this->getLogicalId().' / '.json_encode($_options).' ###');            
-          	$this->getEqLogic()->device( $_options);
+          	log::add('spotify', 'debug', '--- EXECUTE '.$this->getLogicalId().' / '.json_encode($_options).' ---');    
+            $this->getEqLogic()->device( $_options);
 
       	}
       
         if ($this->getLogicalId() == 'device_name_set')
       	{
         	
-          	log::add('spotify', 'debug', '### EXECUTE '.$this->getLogicalId().' / '.json_encode($_options).' ###');            
-          	$this->getEqLogic()->device( $_options);
+          	log::add('spotify', 'debug', '--- EXECUTE '.$this->getLogicalId().' / '.json_encode($_options).' ---');    
+            $this->getEqLogic()->device( $_options);
 
       	}
       
       	if ($this->getLogicalId() == 'playlist_id_set')
       	{
         	
-          	log::add('spotify', 'debug', '### EXECUTE '.$this->getLogicalId().' / '.json_encode($_options).' ###');            
-          	$this->getEqLogic()->playlist( $_options);
+          	log::add('spotify', 'debug', '--- EXECUTE '.$this->getLogicalId().' / '.json_encode($_options).' ---');    
+            $this->getEqLogic()->playlist( $_options);
 
       	}
       
         if ($this->getLogicalId() == 'playlist_name_set')
       	{
         	
-          	log::add('spotify', 'debug', '### EXECUTE '.$this->getLogicalId().' / '.json_encode($_options).' ###');            
-          	$this->getEqLogic()->playlist( $_options);
+          	log::add('spotify', 'debug', '--- EXECUTE '.$this->getLogicalId().' / '.json_encode($_options).' ---');    
+            $this->getEqLogic()->playlist( $_options);
 
       	}
       
