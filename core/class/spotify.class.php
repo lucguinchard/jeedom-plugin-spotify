@@ -674,12 +674,15 @@ class spotify extends eqLogic {
 	  			}
               
               	$res = json_decode( $this->getCookieAccessToken() );
+              	//$res = json_decode( $this->getLightAccessToken() );
               	
               	$token = $res->{accessToken};
+              	//$token = $res->{access_token};
               	log::add('spotify', 'debug', '--- ACCESS TOKEN '.$token.' ---');
       			$this->setConfiguration('accesscookie', $token);
               
               	$expire = $res->{accessTokenExpirationTimestampMs};
+             	//$expire = ( time() + $res->{expires_in} ) *1000;
              	log::add('spotify', 'debug', '--- EXPIRE TOKEN '.$expire.' ---');
       			$this->setConfiguration('expirecookie', $expire);
           		$this->setConfiguration('_expirecookie', date("Y-m-d H:i:s",$expire/1000));
@@ -782,7 +785,7 @@ class spotify extends eqLogic {
       
       	$loop = 60;
       	
-    	while ( $loop-- >= 0 ) {
+    	while ( $loop-- >= 1 ) {
         
           	$response = fread($socket, 2000);
           	log::add('spotify', 'debug', '--- LOOP CHROMECAST ( ' . $loop . ' ) <<< ' . $response . ' <<<');
@@ -855,6 +858,16 @@ class spotify extends eqLogic {
                   	
                   	log::add('spotify', 'debug', '--- SPOTIFY AUTH --- END ---');
                   	
+                } else if ( $type[1] == "setCredentialsError" ) {
+                
+                  	log::add('spotify', 'debug', '--- SPOTIFY ERROR --- BEGIN ---');
+                  
+                  	log::add('spotify', 'debug', '--- SPOTIFY ERROR --- END ---');
+                  
+                  	$loop = -1;
+                  
+                  	throw new Exception($type[1].": erreur de connexion");
+                  
                 } else if ( $type[1] == "setCredentialsResponse" ) {
                   
                   	log::add('spotify', 'debug', '--- SPOTIFY OK --- BEGIN ---');
@@ -1030,10 +1043,10 @@ class spotify extends eqLogic {
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL,            'https://open.spotify.com/access_token?reason=transport&productType=web_player' );
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1 );
-      	curl_setopt($ch, CURLOPT_HTTPHEADER,     array('cookie: '.$cookie)); 
+      	curl_setopt($ch, CURLOPT_HTTPHEADER,     array('cookie: '.$cookie, 'sec-fetch-site: none', 'user-agent: Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Mobile Safari/537.36') ); 
 		$result=curl_exec($ch);
-      	
-      	log::add('spotify', 'debug', '--- LIGHT ACCESS TOKEN '.$result.' ---');   
+      
+      	log::add('spotify', 'debug', '--- COOKIE ACCESS TOKEN '.$result.' ---');   
       		
       	return $result;
       

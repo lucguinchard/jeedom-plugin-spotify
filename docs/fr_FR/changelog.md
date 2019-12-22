@@ -1,4 +1,9 @@
-﻿# 11-11-2019
+﻿# 22-12-2019
+
+- Correction d'un problème de refresh du flag de lecture aléatoire avec plusieurs équipements.
+- Optimisation de l'authentifcation pour la lecture sur les équipements google cast V2.
+
+# 11-11-2019
 
 - Correction d'un problème suite à des tests avec plusieurs équipements
 - Correction d'un problème de refresh token intempestifs depuis le daemon 
