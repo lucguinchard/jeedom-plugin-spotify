@@ -1,4 +1,8 @@
-﻿# 22-12-2019
+﻿# 22-01-2020
+
+- Corrections d'un décalage d'image au niveau widget remontée via le forum
+
+# 22-12-2019
 
 - Correction d'un problème de refresh du flag de lecture aléatoire avec plusieurs équipements.
 - Optimisation de l'authentifcation pour la lecture sur les équipements google cast V2.
