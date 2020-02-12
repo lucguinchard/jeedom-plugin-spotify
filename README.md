@@ -1,1 +1,1 @@
-# jeedom-plugin-spotify
+# jeedom-plugin-spotify 
