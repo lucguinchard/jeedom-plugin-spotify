@@ -1,4 +1,8 @@
-﻿# 22-01-2020
+﻿# 12-02-2020
+
+- Ajout du mode play automatiquement sur selection d'un device, y compris lors d'un device cast v2
+
+# 22-01-2020
 
 - Corrections d'un décalage d'image au niveau widget remontée via le forum
 

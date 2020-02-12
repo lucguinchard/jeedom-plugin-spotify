@@ -701,7 +701,8 @@ class spotify extends eqLogic {
           
           		$option = Array();
           		$option['device_ids'] = $device;
-          
+                $option['play'] = true;
+                
         		$api->changeMyDevice($option);
 
           		return true;
@@ -887,6 +888,7 @@ class spotify extends eqLogic {
                           	log::add('spotify', 'debug', '%%% ' . $device['id'] . ' / ' . $device['name'] . ' %%%');
                           	$option = Array();
           					$option['device_ids'] = $device['id'];
+                            $option['play'] = true;
                   			$api->changeMyDevice($option);
                           	break;
                         }
