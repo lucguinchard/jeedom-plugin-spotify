@@ -13,7 +13,7 @@ var device_name = Array();
 var device_type = Array();
 var device_volume = Array();
 
-var shuffle_state = '';
+var shuffle_state = Array();
 
 var item_id = Array();
 var item_artist = Array();
@@ -163,7 +163,7 @@ function spotifyCheck( _apikey, _index, _command, _access, _refresh, _expire, _i
         
       }
       
-      if( shuffle_state != _shuffle_state ) {
+      if( shuffle_state[_index] != _shuffle_state ) {
         
       	debugLog('%%%%%%%%%%%%%%%% BEGIN SHUFFLE REQUEST ('+_command+') %%%%%%%%%%%%%%%%');
         
@@ -178,7 +178,7 @@ function spotifyCheck( _apikey, _index, _command, _access, _refresh, _expire, _i
         _url = _url.replace('#STATE#', _shuffle_state);
         debugLog('--- STATE '+_shuffle_state+' ---');
 
-        shuffle_state = _shuffle_state;
+        shuffle_state[_index] = _shuffle_state;
 
         if( protocol == 'HTTP' ) {
           http.get(_url);

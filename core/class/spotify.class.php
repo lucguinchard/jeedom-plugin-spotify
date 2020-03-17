@@ -52,14 +52,14 @@ class CastMessage {
       return $txt;
     }
   
-  	public function decode( $binstring ) {
+  	public function decode( $binstring, $debug = 1 ) {
       
-      	log::add('spotify', 'debug', '    --- DECODE --- BEGIN ---');
+      	if ($debug == 1) log::add('spotify', 'debug', '    --- DECODE --- BEGIN ---');
       
       	$index = 0;
     	$size = strlen($binstring);
       
-      	$this->hex_dump( $binstring);
+      	if ($debug == 1) $this->hex_dump( $binstring);
         
       	$length = hex2bin( base_convert(
           	( base_convert( bin2hex( substr( $binstring, $index++, 1) ), 16, 10 ) << 24 )          
@@ -68,7 +68,7 @@ class CastMessage {
          +	( base_convert( bin2hex( substr( $binstring, $index++, 1) ), 16, 10 ) )
         , 10, 16 ) );
       
-      	$this->hex_dump( $length);
+      	if ($debug == 1) $this->hex_dump( $length);
       	
       	while ( $index < $size ) {
           
@@ -79,33 +79,33 @@ class CastMessage {
           if( $field == "1" && $type == "0" ) {
 
               $this->protocolversion = $this->binToVarint(substr( $binstring, $index++, 1));              
-              log::add('spotify', 'debug', '    --- PROTOCOL = "' . $this->protocolversion . '" ---');  
+              if ($debug == 1) log::add('spotify', 'debug', '    --- PROTOCOL = "' . $this->protocolversion . '" ---');  
               
           } else if( $field == "10" && $type == "10" ) {
 
 			  $l_source_id = ord( substr( $binstring, $index++, 1) );                       
               $this->source_id = substr( $binstring, $index, $l_source_id); 
               $index+=$l_source_id;
-              log::add('spotify', 'debug', '    --- SOURCE ID = "' . $this->source_id . '" ---');  
+              if ($debug == 1) log::add('spotify', 'debug', '    --- SOURCE ID = "' . $this->source_id . '" ---');  
               
           } else if( $field == "11" && $type == "10" ) {
 
               $l_receiver_id = ord( substr( $binstring, $index++, 1) );                       
               $this->receiver_id = substr( $binstring, $index, $l_receiver_id); 
               $index+=$l_receiver_id;
-              log::add('spotify', 'debug', '    --- RECEIVER ID = "' . $this->receiver_id . '" ---');  
+              if ($debug == 1) log::add('spotify', 'debug', '    --- RECEIVER ID = "' . $this->receiver_id . '" ---');  
               
           } else if( $field == "100" && $type == "10" ) {
 
 			  $l_urnnamespace = ord( substr( $binstring, $index++, 1) );                       
               $this->urnnamespace = substr( $binstring, $index, $l_urnnamespace); 
               $index+=$l_urnnamespace;
-              log::add('spotify', 'debug', '    --- URNNAMESPACE = "' . $this->urnnamespace . '" ---');  
+              if ($debug == 1) log::add('spotify', 'debug', '    --- URNNAMESPACE = "' . $this->urnnamespace . '" ---');  
               
           } else if( $field == "101" && $type == "0" ) {
 
 			  $this->payloadtype = $this->binToVarint(substr( $binstring, $index++, 1));              
-              log::add('spotify', 'debug', '    --- PAYLOADTYPE = "' . $this->payloadtype . '" ---');
+              if ($debug == 1) log::add('spotify', 'debug', '    --- PAYLOADTYPE = "' . $this->payloadtype . '" ---');
               
           } else if( $field == "110" && $type == "10" ) {
 
@@ -113,62 +113,62 @@ class CastMessage {
               if( $l_payloadutf8 > 128 ) {
                 $l_payloadutf8 = $l_payloadutf8 - 128 + ord( substr( $binstring, $index++, 1) ) * 128;
               }
-              log::add('spotify', 'debug', '    --- PAYLOADLENGTH = "' . $l_payloadutf8 . '" ---');                                              	
+              if ($debug == 1) log::add('spotify', 'debug', '    --- PAYLOADLENGTH = "' . $l_payloadutf8 . '" ---');                                              	
               $this->payloadutf8 = substr( $binstring, $index, $l_payloadutf8); 
               $index+=$l_payloadutf8;
-              log::add('spotify', 'debug', '    --- PAYLOADUTF8 = "' . $this->payloadutf8 . '" ---');
+              if ($debug == 1) log::add('spotify', 'debug', '    --- PAYLOADUTF8 = "' . $this->payloadutf8 . '" ---');
               
           } else {
             
-          	  log::add('spotify', 'debug', '    ??? FIELD = ' . $field . ' ---');	
-          	  log::add('spotify', 'debug', '    ??? TYPE = ' . $type . ' ---');
+          	  if ($debug == 1) log::add('spotify', 'debug', '    ??? FIELD = ' . $field . ' ---');	
+          	  if ($debug == 1) log::add('spotify', 'debug', '    ??? TYPE = ' . $type . ' ---');
           
           }
           
     	}
       
-      	log::add('spotify', 'debug', '    --- DECODE --- END ---');
+      	if ($debug == 1) log::add('spotify', 'debug', '    --- DECODE --- END ---');
       
     }
   
-	public function encode() {
-
-      	log::add('spotify', 'debug', '    --- ENCODE --- BEGIN ---');
+	public function encode( $debug = 0 ) {
+      
+        if ($debug == 1) log::add('spotify', 'debug', '    --- ENCODE --- BEGIN ---');
       
 		$r = "";
 	
         // Protocol version
-      	log::add('spotify', 'debug', '    --- PROTOCOL = "' . $this->protocolversion . '" ---');  
+      	if ($debug == 1) log::add('spotify', 'debug', '    --- PROTOCOL = "' . $this->protocolversion . '" ---');  
 		$r = "00001"; // Field Number 1
 		$r .= "000"; // Int
 		$r .= $this->varintToBin($this->protocolversion);
               
 		// Source id
-      	log::add('spotify', 'debug', '    --- SOURCE ID = "' . $this->source_id . '" ---');
+      	if ($debug == 1) log::add('spotify', 'debug', '    --- SOURCE ID = "' . $this->source_id . '" ---');
     	$r .= "00010"; // Field Number 2
 		$r .= "010"; // String
 		$r .= $this->stringToBin($this->source_id);
 
 		// Receiver id
-		log::add('spotify', 'debug', '    --- RECEIVER ID = "' . $this->receiver_id . '" ---');  
+		if ($debug == 1) log::add('spotify', 'debug', '    --- RECEIVER ID = "' . $this->receiver_id . '" ---');  
       	$r .= "00011"; // Field Number 3
 		$r .= "010"; // String
 		$r .= $this->stringToBin($this->receiver_id);
 
 		// Namespace
-      	log::add('spotify', 'debug', '    --- URNNAMESPACE = "' . $this->urnnamespace . '" ---');  
+      	if ($debug == 1) log::add('spotify', 'debug', '    --- URNNAMESPACE = "' . $this->urnnamespace . '" ---');  
 		$r .= "00100"; // Field Number 4
 		$r .= "010"; // String
 		$r .= $this->stringToBin($this->urnnamespace);
 
 		// Payload type
-		log::add('spotify', 'debug', '    --- PAYLOADTYPE = "' . $this->payloadtype . '" ---');
+		if ($debug == 1) log::add('spotify', 'debug', '    --- PAYLOADTYPE = "' . $this->payloadtype . '" ---');
       	$r .= "00101"; // Field Number 5
 		$r .= "000"; // VarInt
 		$r .= $this->varintToBin($this->payloadtype);
       
 		// Payload utf8
-		log::add('spotify', 'debug', '    --- PAYLOADUTF8 = "' . $this->payloadutf8 . '" ---');
+		if ($debug == 1) log::add('spotify', 'debug', '    --- PAYLOADUTF8 = "' . $this->payloadutf8 . '" ---');
       	$r .= "00110"; // Field Number 6
 		$r .= "010"; // String
 		$r .= $this->stringToBin($this->payloadutf8);
@@ -189,9 +189,9 @@ class CastMessage {
 		$hexstring = $l . $hexstring;
         $ret = hex2bin($hexstring);
       	
-      	$this->hex_dump( $ret);
+      	if ($debug == 1) $this->hex_dump( $ret);
       
-      	log::add('spotify', 'debug', '    --- ENCODE --- END ---');
+      	if ($debug == 1) log::add('spotify', 'debug', '    --- ENCODE --- END ---');
       
 		return $ret;
       
@@ -747,9 +747,9 @@ class spotify extends eqLogic {
           	throw new Exception("Failed to open chromecast");
 		}
 	
-      	// =======
-      	// CONNECT
-      	// =======
+      	// ==============
+      	// SEND : CONNECT
+      	// ==============
       
     	log::add('spotify', 'debug', '--- CONNECT CHROMECAST --- BEGIN ---');
       
@@ -766,6 +766,10 @@ class spotify extends eqLogic {
       
     	log::add('spotify', 'debug', '--- CONNECT CHROMECAST --- END ---');
     
+      	// =====================
+        // SEND : LAUNCH SPOTIFY 
+        // =====================
+      
       	log::add('spotify', 'debug', '--- LAUNCH SPOTIFY --- BEGIN ---');
 
       	$c3 = new CastMessage();
@@ -780,9 +784,9 @@ class spotify extends eqLogic {
 
       	log::add('spotify', 'debug', '--- LAUNCH SPOTIFY --- END ---');
       
-    	// ====
-      	// LOOP
-      	// ====
+    	// ==================
+      	// %% MESSAGE LOOP %%
+      	// ==================
       
       	$loop = 60;
       	
@@ -792,11 +796,15 @@ class spotify extends eqLogic {
           	log::add('spotify', 'debug', '--- LOOP CHROMECAST ( ' . $loop . ' ) <<< ' . $response . ' <<<');
           
           	$c1 = new CastMessage();
-          	$c1->decode( $response);
+          	$c1->decode( $response, 1);
           	          
           	if( preg_match("/\"type\"\:\"([^\"]*)/", $c1->payloadutf8, $type) ) {
           	
           	  	log::add('spotify', 'debug', '--- LOOP CHROMECAST ( ' . $loop . ' ) %%% ' . $type[1] . ' %%%');
+              
+              	// ==============
+              	// RECEIVE : PING
+              	// ==============
               
                 if ( $type[1] == "PING" ) {
 
@@ -815,6 +823,10 @@ class spotify extends eqLogic {
                   
                   	log::add('spotify', 'debug', '--- PING --- END ---');
                 
+                // =========================
+                // RECEIVE : RECEIVER STATUS
+                // =========================
+                  
                 }  else if( $type[1] == "RECEIVER_STATUS" && preg_match("/\"transportId\"/", $c1->payloadutf8) && preg_match("/\"sessionId\"/", $c1->payloadutf8) ) {
                  
                 	log::add('spotify', 'debug', '--- RECEIVER STATUS --- BEGIN ---');
@@ -828,6 +840,10 @@ class spotify extends eqLogic {
 					log::add('spotify', 'debug', '--- WAIT SPOTIFY %%% SESSION ID = ' . $sessionid . ' ---');  
                   
                   	log::add('spotify', 'debug', '--- RECEIVER STATUS --- END ---');
+                  
+                  	// ==============
+                  	// SEND : CONNECT 
+                    // ==============
                   
                   	log::add('spotify', 'debug', '--- SPOTIFY CONNECT --- BEGIN ---');
                   
@@ -859,6 +875,10 @@ class spotify extends eqLogic {
                   	
                   	log::add('spotify', 'debug', '--- SPOTIFY AUTH --- END ---');
                   	
+                // ===============================
+                // RECEIVE : SET CREDENTIALS ERROR
+                // ===============================
+                  
                 } else if ( $type[1] == "setCredentialsError" ) {
                 
                   	log::add('spotify', 'debug', '--- SPOTIFY ERROR --- BEGIN ---');
@@ -869,6 +889,10 @@ class spotify extends eqLogic {
                   
                   	throw new Exception($type[1].": erreur de connexion");
                   
+                // ==================================
+                // RECEIVE : SET CREDENTIALS RESPONSE
+                // ==================================
+                
                 } else if ( $type[1] == "setCredentialsResponse" ) {
                   
                   	log::add('spotify', 'debug', '--- SPOTIFY OK --- BEGIN ---');
@@ -1043,11 +1067,21 @@ class spotify extends eqLogic {
       	log::add('spotify', 'debug', '--- COOKIE '.$cookie.' ---');   
 
 		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL,            'https://open.spotify.com/access_token?reason=transport&productType=web_player' );
+		curl_setopt($ch, CURLOPT_URL,            'https://open.spotify.com/get_access_token?reason=transport&productType=web_player' );
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1 );
-      	curl_setopt($ch, CURLOPT_HTTPHEADER,     array('cookie: '.$cookie, 'sec-fetch-site: none', 'user-agent: Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Mobile Safari/537.36') ); 
+      	curl_setopt($ch, CURLOPT_HTTPHEADER,     array(
+          'app-platform: WebPlayer',
+          'cookie: '.$cookie, 
+          'referer: https://open.spotify.com/',
+          'sec-fetch-user: ?1', 
+          'sec-fetch-mode: navigate',
+		  'sec-fetch-dest: document',
+          'sec-fetch-site: same-origin',
+          'spotify-app-version: 1584347062',
+          'user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36') 
+        ); 
 		$result=curl_exec($ch);
-      
+  
       	log::add('spotify', 'debug', '--- COOKIE ACCESS TOKEN '.$result.' ---');   
       		
       	return $result;

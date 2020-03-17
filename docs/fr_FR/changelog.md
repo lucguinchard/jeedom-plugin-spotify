@@ -1,4 +1,9 @@
-﻿# 12-02-2020
+﻿# 17-03-2020
+
+- Prise en compte du nouveau get_token pour la connexion castv2
+- Correction d'un problème de refresh du flag de lecture aléatoire avec plusieurs équipements.
+
+# 12-02-2020
 
 - Ajout du mode play automatiquement sur selection d'un device, y compris lors d'un device cast v2
 
@@ -8,7 +13,6 @@
 
 # 22-12-2019
 
-- Correction d'un problème de refresh du flag de lecture aléatoire avec plusieurs équipements.
 - Optimisation de l'authentifcation pour la lecture sur les équipements google cast V2.
 
 # 11-11-2019
