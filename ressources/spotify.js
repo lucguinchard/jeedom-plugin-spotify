@@ -158,8 +158,17 @@ function spotifyCheck( _apikey, _index, _command, _access, _refresh, _expire, _i
         
         var _shuffle_state = data.body['shuffle_state']; 
         
-        var _context_type = data.body['context']['type'];  
-        var _context_uri = data.body['context']['uri'];    
+        if( data.body['context'] ) {
+          
+        	var _context_type = data.body['context']['type'];  
+        	var _context_uri = data.body['context']['uri'];    
+        
+        } else {
+          
+        	var _context_type = '';
+        	var _context_uri = '';
+          
+        }
         
       }
       

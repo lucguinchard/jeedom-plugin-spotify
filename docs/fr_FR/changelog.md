@@ -1,4 +1,8 @@
-﻿# 17-03-2020
+﻿# 13-04-2020
+
+- Correction d'un bug dans le cas de context null, 
+ 
+# 17-03-2020
 
 - Prise en compte du nouveau get_token pour la connexion castv2
 - Correction d'un problème de refresh du flag de lecture aléatoire avec plusieurs équipements.
