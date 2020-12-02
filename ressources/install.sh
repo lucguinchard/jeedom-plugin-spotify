@@ -6,7 +6,7 @@ fi
   
 cd ../../plugins/spotify/ressources
   
-echo "Début d'nstallation des dependances"
+echo "Début d'installation des dependances"
 
 echo 0 > /tmp/spotify_dependancy
 
@@ -25,7 +25,7 @@ echo 100 > /tmp/spotify_dependancy
 
 rm /tmp/spotify_dependancy
   
-echo "Fin d'nstallation des dependances"
+echo "Fin d'installation des dependances"
 
 touch /var/www/html/plugins/spotify/ressources/spotify_version
   
