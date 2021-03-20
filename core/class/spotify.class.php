@@ -1582,98 +1582,62 @@ class spotifyCmd extends cmd {
 	/*	 * ************** Methods *************** */
 
 	public function formatValue($_value, $_quote = false) {
-
 		$value = cmd::formatValue($_value, $_quote);
-
-		//log::add('spotify', 'debug', '--- FORMAT VALUE '.$this->getLogicalId().' / '.json_encode($_value).' / '.json_encode($_quote).' / '.json_encode($value).' ---');    
-
+		//log::add(__CLASS__, 'debug', '--- FORMAT VALUE '.$this->getLogicalId().' / '.json_encode($_value).' / '.json_encode($_quote).' / '.json_encode($value).' ---');
 		return $value;
 	}
 
 	public function getCmdValue() {
-
 		$value = cmd::getCmdValue();
-
-		//log::add('spotify', 'debug', '--- GET CMD VALUE '.$this->getLogicalId().' / '.json_encode($value).' ---');    
-
+		//log::add(__CLASS__, 'debug', '--- GET CMD VALUE '.$this->getLogicalId().' / '.json_encode($value).' ---');
 		return $value;
 	}
 
 	public function getValue() {
-
 		$value = cmd::getValue();
-
-		//log::add('spotify', 'debug', '--- GET VALUE '.$this->getLogicalId().' / '.json_encode($value).' ---');    
-
+		//log::add(__CLASS__, 'debug', '--- GET VALUE '.$this->getLogicalId().' / '.json_encode($value).' ---');
 		return $value;
 	}
 
 	public function execute($_options = array()) {
-
-		if ($this->getLogicalId() == 'previous') {
-
-			log::add('spotify', 'debug', '--- EXECUTE ' . $this->getLogicalId() . ' / ' . json_encode($_options) . ' ---');
-			$this->getEqLogic()->previous($_options);
+		if ($this->getType() == 'info') {
+			return;
 		}
 
-		if ($this->getLogicalId() == 'next') {
-
-			log::add('spotify', 'debug', '--- EXECUTE ' . $this->getLogicalId() . ' / ' . json_encode($_options) . ' ---');
-			$this->getEqLogic()->next($_options);
-		}
-
-		if ($this->getLogicalId() == 'play') {
-
-			log::add('spotify', 'debug', '--- EXECUTE ' . $this->getLogicalId() . ' / ' . json_encode($_options) . ' ---');
-			$this->getEqLogic()->play($_options);
-		}
-
-		if ($this->getLogicalId() == 'pause') {
-
-			log::add('spotify', 'debug', '--- EXECUTE ' . $this->getLogicalId() . ' / ' . json_encode($_options) . ' ---');
-			$this->getEqLogic()->pause($_options);
-		}
-
-		if ($this->getLogicalId() == 'shuffle') {
-
-			log::add('spotify', 'debug', '--- EXECUTE ' . $this->getLogicalId() . ' / ' . json_encode($_options) . ' ---');
-			$this->getEqLogic()->shuffle($_options);
-		}
-
-		if ($this->getLogicalId() == 'unshuffle') {
-
-			log::add('spotify', 'debug', '--- EXECUTE ' . $this->getLogicalId() . ' / ' . json_encode($_options) . ' ---');
-			$this->getEqLogic()->unshuffle($_options);
-		}
-
-		if ($this->getLogicalId() == 'device_volume_set') {
-
-			log::add('spotify', 'debug', '--- EXECUTE ' . $this->getLogicalId() . ' / ' . json_encode($_options) . ' ---');
-			$this->getEqLogic()->volume($_options);
-		}
-
-		if ($this->getLogicalId() == 'device_id_set') {
-
-			log::add('spotify', 'debug', '--- EXECUTE ' . $this->getLogicalId() . ' / ' . json_encode($_options) . ' ---');
-			$this->getEqLogic()->device($_options);
-		}
-
-		if ($this->getLogicalId() == 'device_name_set') {
-
-			log::add('spotify', 'debug', '--- EXECUTE ' . $this->getLogicalId() . ' / ' . json_encode($_options) . ' ---');
-			$this->getEqLogic()->device($_options);
-		}
-
-		if ($this->getLogicalId() == 'playlist_id_set') {
-
-			log::add('spotify', 'debug', '--- EXECUTE ' . $this->getLogicalId() . ' / ' . json_encode($_options) . ' ---');
-			$this->getEqLogic()->playlist($_options);
-		}
-
-		if ($this->getLogicalId() == 'playlist_name_set') {
-
-			log::add('spotify', 'debug', '--- EXECUTE ' . $this->getLogicalId() . ' / ' . json_encode($_options) . ' ---');
-			$this->getEqLogic()->playlist($_options);
+		log::add(__CLASS__, 'debug', '--- EXECUTE ' . $this->getLogicalId() . ' / ' . print_r($_options, true) . ' ---');
+		$eqLogic = $this->getEqLogic();
+		switch ($this->getLogicalId()) {
+			case 'previous' :
+				$eqLogic->previous($_options);
+				break;
+			case 'next' :
+				$eqLogic->next($_options);
+				break;
+			case 'play' :
+				$eqLogic->play($_options);
+				break;
+			case 'pause' :
+				$eqLogic->pause($_options);
+				break;
+			case 'shuffle' :
+				$eqLogic->shuffle($_options);
+				break;
+			case 'unshuffle' :
+				$eqLogic->unshuffle($_options);
+				break;
+			case 'device_volume_set' :
+				$eqLogic->volume($_options);
+				break;
+			case 'device_id_set' :
+			case 'device_name_set' :
+				$eqLogic->device($_options);
+				break;
+			case 'playlist_id_set' :
+			case 'playlist_name_set' :
+				$eqLogic->playlist($_options);
+				break;
+			default :
+				log::add(__CLASS__, 'info', '--- TODO: Créer la commande ' . $this->getLogicalId() . ' - ' . print_r($_options, true));
 		}
 	}
 
