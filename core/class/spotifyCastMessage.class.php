@@ -3,7 +3,7 @@
 require_once __DIR__ . '/../../../../core/php/core.inc.php';
 require_once 'spotify.class.php';
 
-class CastMessage {
+class spotifyCastMessage {
 
 	public $protocolversion = 0; // CASTV2_1_0 - It's always this
 	public $source_id; // Source ID String
@@ -32,7 +32,7 @@ class CastMessage {
 
 		$offset = 0;
 		foreach ($hex as $i => $line) {
-			log::add('spotify', 'debug', sprintf('%6X', $offset) . ' : ' . implode(' ', str_split($line, 2)) . ' [' . $chars[$i] . ']');
+			log::add(__CLASS__, 'debug', sprintf('%6X', $offset) . ' : ' . implode(' ', str_split($line, 2)) . ' [' . $chars[$i] . ']');
 			$offset += $width;
 		}
 
@@ -42,7 +42,7 @@ class CastMessage {
 	public function decode($binstring, $debug = 1) {
 
 		if ($debug == 1)
-			log::add('spotify', 'debug', '    --- DECODE --- BEGIN ---');
+			log::add(__CLASS__, 'debug', '    --- DECODE --- BEGIN ---');
 
 		$index = 0;
 		$size = strlen($binstring);
@@ -67,33 +67,33 @@ class CastMessage {
 
 				$this->protocolversion = $this->binToVarint(substr($binstring, $index++, 1));
 				if ($debug == 1)
-					log::add('spotify', 'debug', '    --- PROTOCOL = "' . $this->protocolversion . '" ---');
+					log::add(__CLASS__, 'debug', '    --- PROTOCOL = "' . $this->protocolversion . '" ---');
 			} else if ($field == "10" && $type == "10") {
 
 				$l_source_id = ord(substr($binstring, $index++, 1));
 				$this->source_id = substr($binstring, $index, $l_source_id);
 				$index += $l_source_id;
 				if ($debug == 1)
-					log::add('spotify', 'debug', '    --- SOURCE ID = "' . $this->source_id . '" ---');
+					log::add(__CLASS__, 'debug', '    --- SOURCE ID = "' . $this->source_id . '" ---');
 			} else if ($field == "11" && $type == "10") {
 
 				$l_receiver_id = ord(substr($binstring, $index++, 1));
 				$this->receiver_id = substr($binstring, $index, $l_receiver_id);
 				$index += $l_receiver_id;
 				if ($debug == 1)
-					log::add('spotify', 'debug', '    --- RECEIVER ID = "' . $this->receiver_id . '" ---');
+					log::add(__CLASS__, 'debug', '    --- RECEIVER ID = "' . $this->receiver_id . '" ---');
 			} else if ($field == "100" && $type == "10") {
 
 				$l_urnnamespace = ord(substr($binstring, $index++, 1));
 				$this->urnnamespace = substr($binstring, $index, $l_urnnamespace);
 				$index += $l_urnnamespace;
 				if ($debug == 1)
-					log::add('spotify', 'debug', '    --- URNNAMESPACE = "' . $this->urnnamespace . '" ---');
+					log::add(__CLASS__, 'debug', '    --- URNNAMESPACE = "' . $this->urnnamespace . '" ---');
 			} else if ($field == "101" && $type == "0") {
 
 				$this->payloadtype = $this->binToVarint(substr($binstring, $index++, 1));
 				if ($debug == 1)
-					log::add('spotify', 'debug', '    --- PAYLOADTYPE = "' . $this->payloadtype . '" ---');
+					log::add(__CLASS__, 'debug', '    --- PAYLOADTYPE = "' . $this->payloadtype . '" ---');
 			} else if ($field == "110" && $type == "10") {
 
 				$l_payloadutf8 = ord(substr($binstring, $index++, 1));
@@ -101,69 +101,69 @@ class CastMessage {
 					$l_payloadutf8 = $l_payloadutf8 - 128 + ord(substr($binstring, $index++, 1)) * 128;
 				}
 				if ($debug == 1)
-					log::add('spotify', 'debug', '    --- PAYLOADLENGTH = "' . $l_payloadutf8 . '" ---');
+					log::add(__CLASS__, 'debug', '    --- PAYLOADLENGTH = "' . $l_payloadutf8 . '" ---');
 				$this->payloadutf8 = substr($binstring, $index, $l_payloadutf8);
 				$index += $l_payloadutf8;
 				if ($debug == 1)
-					log::add('spotify', 'debug', '    --- PAYLOADUTF8 = "' . $this->payloadutf8 . '" ---');
+					log::add(__CLASS__, 'debug', '    --- PAYLOADUTF8 = "' . $this->payloadutf8 . '" ---');
 			} else {
 
 				if ($debug == 1)
-					log::add('spotify', 'debug', '    ??? FIELD = ' . $field . ' ---');
+					log::add(__CLASS__, 'debug', '    ??? FIELD = ' . $field . ' ---');
 				if ($debug == 1)
-					log::add('spotify', 'debug', '    ??? TYPE = ' . $type . ' ---');
+					log::add(__CLASS__, 'debug', '    ??? TYPE = ' . $type . ' ---');
 			}
 		}
 
 		if ($debug == 1)
-			log::add('spotify', 'debug', '    --- DECODE --- END ---');
+			log::add(__CLASS__, 'debug', '    --- DECODE --- END ---');
 	}
 
 	public function encode($debug = 0) {
 
 		if ($debug == 1)
-			log::add('spotify', 'debug', '    --- ENCODE --- BEGIN ---');
+			log::add(__CLASS__, 'debug', '    --- ENCODE --- BEGIN ---');
 
 		$r = "";
 
 		// Protocol version
 		if ($debug == 1)
-			log::add('spotify', 'debug', '    --- PROTOCOL = "' . $this->protocolversion . '" ---');
+			log::add(__CLASS__, 'debug', '    --- PROTOCOL = "' . $this->protocolversion . '" ---');
 		$r = "00001"; // Field Number 1
 		$r .= "000"; // Int
 		$r .= $this->varintToBin($this->protocolversion);
 
 		// Source id
 		if ($debug == 1)
-			log::add('spotify', 'debug', '    --- SOURCE ID = "' . $this->source_id . '" ---');
+			log::add(__CLASS__, 'debug', '    --- SOURCE ID = "' . $this->source_id . '" ---');
 		$r .= "00010"; // Field Number 2
 		$r .= "010"; // String
 		$r .= $this->stringToBin($this->source_id);
 
 		// Receiver id
 		if ($debug == 1)
-			log::add('spotify', 'debug', '    --- RECEIVER ID = "' . $this->receiver_id . '" ---');
+			log::add(__CLASS__, 'debug', '    --- RECEIVER ID = "' . $this->receiver_id . '" ---');
 		$r .= "00011"; // Field Number 3
 		$r .= "010"; // String
 		$r .= $this->stringToBin($this->receiver_id);
 
 		// Namespace
 		if ($debug == 1)
-			log::add('spotify', 'debug', '    --- URNNAMESPACE = "' . $this->urnnamespace . '" ---');
+			log::add(__CLASS__, 'debug', '    --- URNNAMESPACE = "' . $this->urnnamespace . '" ---');
 		$r .= "00100"; // Field Number 4
 		$r .= "010"; // String
 		$r .= $this->stringToBin($this->urnnamespace);
 
 		// Payload type
 		if ($debug == 1)
-			log::add('spotify', 'debug', '    --- PAYLOADTYPE = "' . $this->payloadtype . '" ---');
+			log::add(__CLASS__, 'debug', '    --- PAYLOADTYPE = "' . $this->payloadtype . '" ---');
 		$r .= "00101"; // Field Number 5
 		$r .= "000"; // VarInt
 		$r .= $this->varintToBin($this->payloadtype);
 
 		// Payload utf8
 		if ($debug == 1)
-			log::add('spotify', 'debug', '    --- PAYLOADUTF8 = "' . $this->payloadutf8 . '" ---');
+			log::add(__CLASS__, 'debug', '    --- PAYLOADUTF8 = "' . $this->payloadutf8 . '" ---');
 		$r .= "00110"; // Field Number 6
 		$r .= "010"; // String
 		$r .= $this->stringToBin($this->payloadutf8);
@@ -191,7 +191,7 @@ class CastMessage {
 			$this->hex_dump($ret);
 
 		if ($debug == 1)
-			log::add('spotify', 'debug', '    --- ENCODE --- END ---');
+			log::add(__CLASS__, 'debug', '    --- ENCODE --- END ---');
 
 		return $ret;
 	}
