@@ -2,15 +2,15 @@
 
 header('Content-Type: application/json');
 
-require_once dirname(__FILE__) . '/../../3rdparty/SpotifyWebAPI/Session.php';
-require_once dirname(__FILE__) . '/../../3rdparty/SpotifyWebAPI/Request.php';
-require_once dirname(__FILE__) . '/../../3rdparty/SpotifyWebAPI/SpotifyWebAPI.php';
-require_once dirname(__FILE__) . '/../../3rdparty/SpotifyWebAPI/SpotifyWebAPIException.php';
-require_once dirname(__FILE__) . '/../../3rdparty/SpotifyWebAPI/SpotifyWebAPIAuthException.php';
+require_once __DIR__ . '/../../3rdparty/SpotifyWebAPI/Session.php';
+require_once __DIR__ . '/../../3rdparty/SpotifyWebAPI/Request.php';
+require_once __DIR__ . '/../../3rdparty/SpotifyWebAPI/SpotifyWebAPI.php';
+require_once __DIR__ . '/../../3rdparty/SpotifyWebAPI/SpotifyWebAPIException.php';
+require_once __DIR__ . '/../../3rdparty/SpotifyWebAPI/SpotifyWebAPIAuthException.php';
 
 try {
 
-	require_once dirname(__FILE__) . '/../../../../core/php/core.inc.php';
+	require_once __DIR__ . '/../../../../core/php/core.inc.php';
 
 	include_file('core', 'authentification', 'php');
 
