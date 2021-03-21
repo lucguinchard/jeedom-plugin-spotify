@@ -70,7 +70,7 @@ if ($code != '') {
 
 	<!-- <?php foreach ($eqLogics as $eqLogic) : ?>
 			<li class="cursor li_eqLogic" data-eqLogic_id="<?php echo $eqLogic->getId(); ?>">
-				<a><?php echo $eqLogic->getHumanName(true); ?></a>
+				<a><?= $eqLogic->getHumanName(true); ?></a>
 			</li>
 		<?php endforeach; ?> -->
 
@@ -101,7 +101,7 @@ if ($code != '') {
 
 			<div class="cursor eqLogicAction" data-action="add" style="text-align: center; background-color : #ffffff; height : 140px;margin-bottom : 10px;padding : 5px;border-radius: 2px;width : 160px;margin-left : 10px; position: absolute; left: 0px; top: 0px;">
 				<i class="fa fa-plus-circle" style="font-size : 6em;color:#94ca02;"></i>
-				<br>
+				<br/>
 				<span style="font-size : 1.1em;position:relative; top : 23px; word-break: break-all; white-space: pre-wrap; word-wrap: break-word;color:#94ca02">{{Ajouter}}</span>
 			</div>
 
@@ -111,7 +111,7 @@ if ($code != '') {
 
 			<div class="cursor eqLogicAction" data-action="gotoPluginConf" style="text-align: center; background-color : #ffffff; height : 140px;margin-bottom : 10px;padding : 5px;border-radius: 2px;width : 160px;margin-left : 10px; ; position: absolute; left: 0px; top: 0px;">
 				<i class="fa fa-wrench" style="font-size : 6em;color:#767676;"></i>
-				<br>
+				<br/>
 				<span style="font-size : 1.1em;position:relative; top : 23px;word-break: break-all;white-space: pre-wrap;word-wrap: break-word;color:#767676">{{Configuration}}</span>
 			</div>
 
@@ -134,8 +134,9 @@ if ($code != '') {
 			<?php foreach ($eqLogics as $eqLogic) : ?>
 
 				<div class="eqLogicDisplayCard cursor" data-eqlogic_id="<?php echo $eqLogic->getId(); ?>" style="position: absolute; left: 0px; top: 0px;">
-					<img style="margin-bottom:5px" src="plugins/spotify/ressources/spotify_equipment.png"><br>    
-					<span class="name"><?php echo $eqLogic->getHumanName(true, true); ?></span>
+					<img style="margin-bottom:5px" src="plugins/spotify/ressources/spotify_equipment.png">
+					<br/>
+					<span class="name"><?= $eqLogic->getHumanName(true, true); ?></span>
 				</div>
 
 			<?php endforeach; ?>
@@ -213,7 +214,7 @@ if ($code != '') {
 
 			<div role="tabpanel" class="tab-pane active" id="eqlogictab">
 
-				<br>
+				<br/>
 
 				<!-- ================ -->
 				<!-- Ligne de contenu -->
@@ -253,11 +254,9 @@ if ($code != '') {
 									<div class="col-sm-2">
 										<select class="form-control eqLogicAttr" data-l1key="object_id">
 											<option value="">{{Aucun}}</option>
-												<?php
-												foreach (jeeObject::all() as $object) {
-													echo '<option value="' . $object->getId() . '">' . $object->getName() . '</option>';
-												}
-												?>
+												<?php foreach (jeeObject::all() as $object) { ?>
+												<option value="<?= $object->getId() ?>"><?= $object->getName() ?></option>
+												<?php } ?>
 										</select>
 									</div>
 								</div>
@@ -273,7 +272,7 @@ if ($code != '') {
 									</div>
 								</div>
 
-								<br>
+								<br/>
 
 								<div class="form-group" style="display : none">
 									<label class="col-sm-3 control-label">{{Callback url}}</label>
@@ -364,7 +363,7 @@ if ($code != '') {
 
 <!-- <a class="btn btn-success btn-sm cmdAction pull-right" data-action="add" style="margin-top:5px;"> <i class="fa fa-plus-circle"></i> {{Commandes}}</a>
 
-<br><br> -->
+<br/><br/> -->
 
 				<!-- ===================== -->
 				<!-- Tableau des commandes -->
