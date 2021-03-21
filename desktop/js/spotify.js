@@ -60,7 +60,7 @@ function spotify_callback(code) {
 			$('#md_spotify_alert').showAlert({message: error, level: 'danger'});
 		},
 		success: function (data) {
-			if (data.state != 'ok') {
+			if (data.state !== 'ok') {
 
 				$('#md_spotify_alert').showAlert({message: data.result, level: 'danger'});
 
@@ -107,7 +107,7 @@ $('#tokenize').click(function (e) {
 			$('#md_spotify_alert').showAlert({message: error, level: 'danger'});
 		},
 		success: function (data) {
-			if (data.state != 'ok') {
+			if (data.state !== 'ok') {
 
 				$('#md_spotify_alert').showAlert({message: data.result, level: 'danger'});
 
@@ -122,7 +122,7 @@ $('#tokenize').click(function (e) {
 				window.addEventListener("message", function (event) {
 					console.log(event);
 					var hash = JSON.parse(event.data);
-					if (hash.type == 'access_token') {
+					if (hash.type === 'access_token') {
 						spotify_callback(hash.access_token);
 					}
 				}, false);
