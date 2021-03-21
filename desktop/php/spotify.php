@@ -181,7 +181,7 @@ if ($code != '') {
 
 			<li role="presentation" class="active">
 				<a href="#eqlogictab" aria-controls="home" role="tab" data-toggle="tab">
-					<i class="fa fa-tachometer"></i> {{Equipement}}
+					<i class="fa fa-tachometer-alt"></i> {{Equipement}}
 				</a>
 			</li>
 
